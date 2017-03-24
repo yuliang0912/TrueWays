@@ -92,6 +92,7 @@
     <Compile Include="Common\Dapper\IgnoreFieldAttribute.cs" />
     <Compile Include="Common\Dapper\SqlAssemble.cs" />
     <Compile Include="Common\Dapper\SqlMapperExtensions.cs" />
+    <Compile Include="Common\Extensions\StringExtensions.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="Models\CustomerInfo.cs" />
     <Compile Include="Models\OrderInfo.cs" />
