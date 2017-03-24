@@ -1,0 +1,50 @@
+CREATE TABLE `customerinfo` (
+  `customerId` int(11) NOT NULL AUTO_INCREMENT,
+  `shopNo` int(11) NOT NULL,
+  `name` varchar(40) NOT NULL,
+  `abbreviation` varchar(128) NOT NULL,
+  `contactName` varchar(40) NOT NULL,
+  `phone` varchar(24) NOT NULL,
+  `mobile` varchar(24) NOT NULL,
+  `address` varchar(200) NOT NULL,
+  `salesman` varchar(200) NOT NULL,
+  `createDate` datetime NOT NULL,
+  `status` int(11) NOT NULL,
+  PRIMARY KEY (`customerId`),
+  UNIQUE KEY `Unique_shopNo` (`shopNo`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `orderinfo` (
+  `orderId` int(11) NOT NULL AUTO_INCREMENT,
+  `orderNo` varchar(40) NOT NULL,
+  `shopName` varchar(40) NOT NULL,
+  `contactName` varchar(40) NOT NULL,
+  `phone` varchar(24) NOT NULL,
+  `mobile` varchar(24) NOT NULL,
+  `address` varchar(300) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `technician` varchar(40) NOT NULL,
+  `faultContent` text NOT NULL,
+  `communicationRecord` text NOT NULL,
+  `remark` text NOT NULL,
+  `createDate` datetime NOT NULL,
+  `handleDate` datetime NOT NULL,
+  `endDate` datetime NOT NULL,
+  `orderStatus` int(11) NOT NULL,
+  PRIMARY KEY (`orderId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+CREATE TABLE `userinfo` (
+  `userId` int(11) NOT NULL AUTO_INCREMENT,
+  `userName` varchar(200) NOT NULL,
+  `loginName` varchar(200) NOT NULL,
+  `passWord` varchar(200) NOT NULL,
+  `userRole` int(11) NOT NULL,
+  `phone` varchar(25) NOT NULL,
+  `mobile` varchar(25) NOT NULL,
+  `saltValue` varchar(128) NOT NULL,
+  `createDate` datetime NOT NULL,
+  `status` int(11) NOT NULL,
+  PRIMARY KEY (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
