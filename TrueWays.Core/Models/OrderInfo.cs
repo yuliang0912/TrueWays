@@ -50,5 +50,7 @@ namespace TrueWays.Core.Models
         public DateTime HandleDate { get; set; }
 
         public DateTime EndDate { get; set; }
+
+        public int OrderStatus { get; set; }
     }
 }

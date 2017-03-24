@@ -190,6 +190,7 @@
     <Content Include="Content\css\plugins\treeview\bootstrap-treeview.css" />
     <Content Include="Content\css\plugins\webuploader\webuploader.css" />
     <Content Include="Content\css\style.css" />
+    <Content Include="Content\images\logo.png" />
     <Content Include="Content\js\bootstrap.min.js" />
     <Content Include="Content\js\contabs.js" />
     <Content Include="Content\js\content.js" />
@@ -275,6 +276,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
+    <Content Include="Views\Customer\QrCode.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -285,8 +287,6 @@
   <ItemGroup>
     <Folder Include="Content\fonts\" />
     <Folder Include="Content\ImageFiles\QrCode\" />
-    <Folder Include="Content\images\" />
-    <Folder Include="Views\Customer\" />
     <Folder Include="Views\Order\" />
   </ItemGroup>
   <ItemGroup>

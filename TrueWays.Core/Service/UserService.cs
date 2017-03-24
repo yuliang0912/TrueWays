@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrueWays.Core.Common.Extensions;
 using TrueWays.Core.Models;
 using TrueWays.Core.Repository;
 using TrueWays.Core.Utilities;
@@ -21,7 +22,13 @@ namespace TrueWays.Core.Service
 
         public UserInfo GetUserInfo(object condition)
         {
-            return null;
+            return _userInfoRepository.Get(condition);
+        }
+
+
+        public List<UserInfo> GetPageList(object condition, int page, int pageSize, out int totalItem)
+        {
+            return _userInfoRepository.GetPageList(condition, "", page, pageSize, out totalItem).ToList();
         }
 
         public UserInfo Login(string userName, string passWord, out bool isPass)
@@ -54,6 +61,25 @@ namespace TrueWays.Core.Service
                     .Hmacsha1(user.SaltValue);
 
             return _userInfoRepository.Update(new {passWord = newPassWord}, new {user.UserId}) ? 1 : 0;
+        }
+
+        //注册用户
+        public int RegisterUser(UserInfo model)
+        {
+            if (_userInfoRepository.Count(new {model.UserName}) > 0)
+            {
+                return 2;
+            }
+
+            model.SaltValue = StringExtensions.GetRandomString();
+            model.Mobile = model.Mobile ?? string.Empty;
+            model.Phone = model.Phone ?? string.Empty;
+            model.PassWord =
+                string.Concat(model.UserName, PassWordSplitString, model.UserRole.GetHashCode(), model.PassWord)
+                    .Hmacsha1(model.SaltValue);
+            model.CreateDate = DateTime.Now;
+
+            return _userInfoRepository.Insert(model) > 0 ? 1 : 0;
         }
     }
 }
