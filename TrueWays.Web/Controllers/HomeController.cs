@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using TrueWays.Core;
 using TrueWays.Core.Models;
 using TrueWays.Core.Models.Result;
 using TrueWays.Core.Service;
@@ -14,14 +15,22 @@ namespace TrueWays.Web.Controllers
 {
     public class HomeController : BaseController
     {
-        // GET: Home
-        public ActionResult Index()
-        {
-            return null;
-        }
-
         public ActionResult Login()
         {
+            return View();
+        }
+
+        public ActionResult Home()
+        {
+            UserService.Instance.RegisterUser(new UserInfo()
+            {
+                UserName = "管理员",
+                LoginName = "admin",
+                PassWord = "123456",
+                UserRole = UserRole.管理员,
+                Phone = "7771730",
+                Mobile = "18923803593"
+            });
             return View();
         }
 
@@ -60,15 +69,11 @@ namespace TrueWays.Web.Controllers
         {
             bool isPass;
             var userInfo = UserService.Instance.Login(loginName, passWord, out isPass);
-            if (userInfo != null && userInfo.Status != 0)
-            {
-                return Json(new {isPass = 2, userRole = userInfo?.UserRole}, JsonRequestBehavior.AllowGet);
-            }
             if (isPass)
             {
-                FormsAuthenticationWrapper.Instance.SetAuthCookie(userInfo.UserId.ToString(), false);
+                FormsAuthenticationWrapper.Instance.SetAuthCookie(userInfo.UserId.ToString(), true);
             }
-            return Json(new {isPass, userRole = userInfo?.UserRole}, JsonRequestBehavior.AllowGet);
+            return Json(isPass, JsonRequestBehavior.AllowGet);
         }
 
 

@@ -6,15 +6,39 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using TrueWays.Core.Models;
+using TrueWays.Core.Models.Result;
+using TrueWays.Core.Service;
 using TrueWays.Core.Utilities;
 using TrueWays.Web.Fillter;
 
 namespace TrueWays.Web.Controllers
 {
+    [AdminAuthorize]
     public class CustomerController : BaseController
     {
         // GET: Customer
-        public ActionResult Index()
+        public ActionResult Index(string keyWords = "", string phone = "", int status = -1, int page = 1,
+            int pageSize = 20)
+        {
+            int totalItem;
+
+            var list = CustomerService.Instance.SearchCustomers(keyWords, phone, status, page, pageSize, out totalItem);
+
+            ViewBag.keyWords = keyWords;
+            ViewBag.phone = phone;
+            ViewBag.status = status;
+
+            return View(new ApiPageList<CustomerInfo>()
+            {
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalItem,
+                PageList = list
+            });
+        }
+
+        public ActionResult Add()
         {
             return View();
         }

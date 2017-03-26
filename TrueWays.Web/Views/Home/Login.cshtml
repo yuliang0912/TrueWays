@@ -60,23 +60,23 @@
     <script src="/content/js/qingfeng.core.js"></script>
     <script>
     $("#loginBtn").click(function () {
-        var username = $("#username")
-        var password = $("#password")
+        var username = $("#username");
+        var password = $("#password");
         if (username.val().trim().length < 1) {
-            username.focus()
-            return layer.tips("请输入用户名", username, {tips: [3, '#0FA6D8']})
+            username.focus();
+            return layer.tips("请输入用户名", username, { tips: [3, '#0FA6D8'] });
         }
         if (password.val().trim().length < 1) {
-            password.focus()
-            return layer.tips("请输入密码", password, {tips: [3, '#0FA6D8']})
+            password.focus();
+            return layer.tips("请输入密码", password, { tips: [3, '#0FA6D8'] });
         }
-        $core.ajax.postJSON("/home/login", {userName: username.val(), passWord: password.val()}, function (data) {
-            if (data === 1) {
-                location.href = "/"
+        $core.ajax.postJSON("/home/LoginCheck", { loginName: username.val(), passWord: password.val() }, function(data) {
+            if (data === true) {
+                location.href = "/Customer/index";
             } else {
-                layer.msg(this.msg)
+                layer.msg("用户名或密码错误");
             }
-        })
+        });
     })
     $('#password,#username').bind('keypress', function (event) {
         if(event.keyCode === 13) {

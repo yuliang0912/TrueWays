@@ -14,7 +14,7 @@ namespace TrueWays.Web.FormsAuth
         {
         }
 
-        private const string CurrDomain = "www.qingfeng.com";
+        private const string CurrDomain = "www.trueways.com";
 
         public void SetAuthCookie(string userKeyId, bool createPersistentCookie)
         {
