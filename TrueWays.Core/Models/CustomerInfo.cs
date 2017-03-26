@@ -1,4 +1,6 @@
-﻿namespace TrueWays.Core.Models
+﻿using System;
+
+namespace TrueWays.Core.Models
 {
     public class CustomerInfo
     {
@@ -30,7 +32,7 @@
         /// </summary>
         public string Salesman { get; set; }
 
-        public string CreateDate { get; set; }
+        public DateTime CreateDate { get; set; }
 
         public int Status { get; set; }
     }

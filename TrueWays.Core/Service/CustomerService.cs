@@ -26,5 +26,13 @@ namespace TrueWays.Core.Service
         {
             return _customerInfoRepository.GetPageList(conditon, "", page, pageSize, out totalItem).ToList();
         }
+
+
+        public IEnumerable<CustomerInfo> SearchCustomers(string keyWords, string phone, int status, int page,
+            int pageSize,
+            out int totalItem)
+        {
+            return _customerInfoRepository.SearchCustomers(keyWords, phone, status, page, pageSize, out totalItem);
+        }
     }
 }

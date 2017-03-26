@@ -31,9 +31,9 @@ namespace TrueWays.Core.Service
             return _userInfoRepository.GetPageList(condition, "", page, pageSize, out totalItem).ToList();
         }
 
-        public UserInfo Login(string userName, string passWord, out bool isPass)
+        public UserInfo Login(string loginName, string passWord, out bool isPass)
         {
-            var user = _userInfoRepository.Get(new {userName});
+            var user = _userInfoRepository.Get(new { loginName });
 
             if (user == null)
             {
@@ -75,7 +75,7 @@ namespace TrueWays.Core.Service
             model.Mobile = model.Mobile ?? string.Empty;
             model.Phone = model.Phone ?? string.Empty;
             model.PassWord =
-                string.Concat(model.UserName, PassWordSplitString, model.UserRole.GetHashCode(), model.PassWord)
+                string.Concat(model.LoginName, PassWordSplitString, model.UserRole.GetHashCode(), model.PassWord)
                     .Hmacsha1(model.SaltValue);
             model.CreateDate = DateTime.Now;
 
