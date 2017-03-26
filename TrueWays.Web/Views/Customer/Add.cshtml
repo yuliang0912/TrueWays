@@ -1,0 +1,107 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    .panel {
+        width: 99%;
+        margin: 10px auto;
+    }
+
+    td {
+        vertical-align: middle !important;
+    }
+
+    th {
+        text-align: center !important;
+    }
+
+    .td_title {
+        width: 100px;
+        text-align: center;
+    }
+
+    .td_input {
+        width: 200px;
+    }
+
+    .td-left {
+        width: 350px;
+    }
+</style>
+<div class="page-header">
+    <h1 class="form-inline">
+        添加商户
+        <a href="/customer/index" class="btn btn-info btn-sm pull-right back-to-list pageCount"> <i class="icon-circle-arrow-left"></i> 返回列表</a>
+    </h1>
+
+</div>
+<form class="form-inline" role="form" id="order-form" method="post" action="http://www.findshoes.cn/order/add">
+    <div class="panel panel-info">
+        <!-- Default panel contents -->
+        <div class="panel-heading">基本信息</div>
+        <table class="table">
+            <tr>
+                <td class="td_title">商户名称：</td>
+                <td width="300"><input type="text" name="orderNo" id="orderNo" class="td_input" /></td>
+                <td class="td_title">简称：</td>
+                <td><input type="text" name="contactPhone" id="contactPhone" class="td_input" /></td>
+            </tr>
+            <tr>
+                <td class="td_title">联系人：</td>
+                <td colspan="3"><input type="text" name="contactName" id="contactName" class="td_input" /></td>
+            </tr>
+            <tr>
+                <td class="td_title">固定电话：</td>
+                <td width="300"><input type="text" name="orderNo" id="orderNo" class="td_input"/></td>
+                <td class="td_title">手机：</td>
+                <td><input type="text" name="contactPhone" id="contactPhone" class="td_input"/></td>
+            </tr>
+            <tr>
+                <td class="td_title">地址：</td>
+                <td width="300"><input type="text" name="orderNo" id="orderNo" class="td_input"/></td>
+                <td class="td_title">业务员：</td>
+                <td><input type="text" name="contactPhone" id="contactPhone" class="td_input"/></td>
+            </tr>
+            <tr>
+                <td class="td_title">商户LOGO：</td>
+                <td colspan="3"><img /></td>
+            </tr>
+        </table>
+    </div>
+    <div class="panel panel-success">
+        <!-- Default panel contents -->
+        <div class="panel-heading" style="padding:7px 15px;">
+            商户备注
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-10">
+                <div class="form-group">
+                    <label for="exampleInputEmail2">备注：</label>
+                    <textarea name="note" rows="7" cols="120" maxlength="5000" id="remark" class="form-control"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- /.row -->
+    </div>
+
+    <div style="width:300px; margin:5px auto;">
+        <input type="hidden" name="action" value="dosubmit">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <button type="submit" class="btn btn-primary" id="order-save">保存</button>
+    </div>
+</form>
+<script type="text/javascript">
+    $('.back-to-list').off('click').on('click', function () {
+        var url = $('#page-content').attr('data-back-url');
+        if (!url) {
+            url = $(this).attr('href');
+        }
+
+        $.getPageContent({ url: url });
+        return false;
+    });
+</script>
