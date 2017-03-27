@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 using TrueWays.Core.Common.Dapper;
 using TrueWays.Core.Models;
 
@@ -40,6 +41,14 @@ namespace TrueWays.Core.Repository
             {
                 return connection.QueryPaged<CustomerInfo>(new {keyWords}, TableName, "CreateDate DESC", page, pageSize,
                     out totalItem, buildWhereSql);
+            }
+        }
+
+        public int Max()
+        {
+            using (var connection = GetReadConnection)
+            {
+                return connection.ExecuteScalar<int>("SELECT MAX(shopNo) From customerInfo");
             }
         }
     }

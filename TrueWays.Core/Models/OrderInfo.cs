@@ -44,6 +44,8 @@ namespace TrueWays.Core.Models
 
         public DateTime CreateDate { get; set; }
 
+        public string HandleName { get; set; }
+
         /// <summary>
         /// 处理时间
         /// </summary>

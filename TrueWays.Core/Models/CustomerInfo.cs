@@ -35,5 +35,9 @@ namespace TrueWays.Core.Models
         public DateTime CreateDate { get; set; }
 
         public int Status { get; set; }
+
+        public string Remark { get; set; }
+
+        public string Logo { get; set; }
     }
 }

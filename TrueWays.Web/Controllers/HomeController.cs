@@ -53,17 +53,6 @@ namespace TrueWays.Web.Controllers
             return null;
         }
 
-        public ActionResult CreateQrCode()
-        {
-            using (var ms = new MemoryStream())
-            {
-                QrCodeHelper.GetQrCode("http://www.baidu.com", ms);
-                var image = Image.FromStream(ms);
-                image.Save(Server.MapPath("/Content/ImageFiles/1.png"));
-            }
-            return Redirect("/Content/ImageFiles/1.png");
-        }
-
 
         public JsonResult LoginCheck(string loginName, string passWord)
         {

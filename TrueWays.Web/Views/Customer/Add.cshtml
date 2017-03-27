@@ -38,36 +38,36 @@
     </h1>
 
 </div>
-<form class="form-inline" role="form" id="order-form" method="post" action="http://www.findshoes.cn/order/add">
+<form class="form-inline" role="form" id="order-form" method="post" enctype="multipart/form-data" action="/customer/addCustomer">
     <div class="panel panel-info">
         <!-- Default panel contents -->
         <div class="panel-heading">基本信息</div>
         <table class="table">
             <tr>
                 <td class="td_title">商户名称：</td>
-                <td width="300"><input type="text" name="orderNo" id="orderNo" class="td_input" /></td>
+                <td width="300"><input type="text" name="name" id="name" maxlength="40" class="td_input" /></td>
                 <td class="td_title">简称：</td>
-                <td><input type="text" name="contactPhone" id="contactPhone" class="td_input" /></td>
+                <td><input type="text" name="abbreviation" id="abbreviation" maxlength="40" class="td_input" /></td>
             </tr>
             <tr>
                 <td class="td_title">联系人：</td>
-                <td colspan="3"><input type="text" name="contactName" id="contactName" class="td_input" /></td>
+                <td colspan="3"><input type="text" name="contactName" maxlength="40" id="contactName" class="td_input" /></td>
             </tr>
             <tr>
                 <td class="td_title">固定电话：</td>
-                <td width="300"><input type="text" name="orderNo" id="orderNo" class="td_input"/></td>
+                <td width="300"><input type="text" name="phone" id="phone" maxlength="24" class="td_input" /></td>
                 <td class="td_title">手机：</td>
-                <td><input type="text" name="contactPhone" id="contactPhone" class="td_input"/></td>
+                <td><input type="text" name="mobile" id="mobile" maxlength="24" class="td_input" /></td>
             </tr>
             <tr>
                 <td class="td_title">地址：</td>
-                <td width="300"><input type="text" name="orderNo" id="orderNo" class="td_input"/></td>
+                <td width="300"><input type="text" name="address" id="address" maxlength="200" class="td_input"/></td>
                 <td class="td_title">业务员：</td>
-                <td><input type="text" name="contactPhone" id="contactPhone" class="td_input"/></td>
+                <td><input type="text" name="salesman" id="salesman" maxlength="200" class="td_input"/></td>
             </tr>
             <tr>
                 <td class="td_title">商户LOGO：</td>
-                <td colspan="3"><img /></td>
+                <td colspan="3"><input type="file" name="file" value="请选择logo"/></td>
             </tr>
         </table>
     </div>
@@ -80,7 +80,7 @@
             <div class="col-lg-10">
                 <div class="form-group">
                     <label for="exampleInputEmail2">备注：</label>
-                    <textarea name="note" rows="7" cols="120" maxlength="5000" id="remark" class="form-control"></textarea>
+                    <textarea rows="7" cols="120" maxlength="500" name="remark" id="remark" class="form-control"></textarea>
                 </div>
             </div>
         </div>
@@ -90,8 +90,8 @@
 
     <div style="width:300px; margin:5px auto;">
         <input type="hidden" name="action" value="dosubmit">
-        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-        <button type="submit" class="btn btn-primary" id="order-save">保存</button>
+        <button type="button" class="btn btn-default" id="cancel" data-dismiss="modal">取消</button>
+        <button type="button" class="btn btn-primary" id="order-save">保存</button>
     </div>
 </form>
 <script type="text/javascript">
@@ -103,5 +103,50 @@
 
         $.getPageContent({ url: url });
         return false;
+    });
+
+    $("#order-save").click(function() {
+        if ($("#name").val().length < 1) {
+            return layer.tips("请输入商户名", $("#name"), { tips: [2, '#438eb9'] });
+        }
+        if ($("#abbreviation").val().length < 1) {
+            return layer.tips("请输入商户简称", $("#abbreviation"), { tips: [2, '#438eb9'] });
+        }
+        if ($("#contactName").val().length < 1) {
+            return layer.tips("请输入联系人", $("#contactName"), { tips: [2, '#438eb9'] });
+        }
+        if ($("#address").val().length < 1) {
+            return layer.tips("请输入商户地址", $("#address"), { tips: [2, '#438eb9'] });
+        }
+        if ($("#salesman").val().length < 1) {
+            return layer.tips("请输入业务员", $("#salesman"), { tips: [2, '#438eb9'] });
+        }
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "/customer/addCustomer",
+            data: new FormData($('#order-form')[0]), // 你的formid
+            async: false,
+            processData: false,
+            contentType: false
+        }).done(function(res) {
+            if (res.data === 1) {
+                layer.confirm("添加成功", function() {
+                    $.getPageContent({ url: "/customer/index" });
+                    layer.closeAll();
+                });
+            } else if (res.data === 2) {
+                layer.msg(res.message);
+            } else {
+                layer.msg("添加失败");
+            }
+        }).fail(function(res) {
+            layer.alert("添加失败");
+        });
+        return true;
+    });
+   
+    $("#cancel").click(function () {
+        $.getPageContent({ url: "/customer/index" });
     });
 </script>

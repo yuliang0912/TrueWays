@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var index = 1;
 }
 
 @model TrueWays.Core.Models.Result.ApiPageList<TrueWays.Core.Models.CustomerInfo>
@@ -10,6 +11,7 @@
     .red {
         color: red;
     }
+
     .green {
         color: green;
     }
@@ -27,15 +29,17 @@
             </div>
             <div class="form-group">
                 <label class="sr-only" for="status">状态</label>
-                <select name="pay_status" id="status" class="form-control input-sm filter_goods">
+                <select name="status" id="status" class="form-control input-sm filter_goods">
                     <option value="-1">状态</option>
-                    <option value="0">有效</option>
-                    <option value="1">无效</option>
+                    <option value="0" @(ViewBag.status == 0 ? "selected" : "" )>有效</option>
+                    <option value="1" @(ViewBag.status == 1 ? "selected" : "" )>无效</option>
                 </select>
             </div>
             <button type="button" class="btn btn-primary btn-sm " id="staff-search">搜索</button>
+            <button type="button" class="btn btn-primary btn-sm" id="down-load">一键导出二维码</button>
+            <button type="button" class="btn btn-primary btn-sm " id="export">导出Excel</button>
         </small>
-        <a href="/customer/add" class="btn btn-info btn-sm pull-right back-to-list"> <i class="glyphicon glyphicon-plus"></i> 添加商户</a>
+        <a href="/customer/add" class="btn btn-info btn-sm pull-right settings"> <i class="glyphicon glyphicon-plus"></i> 添加商户</a>
     </h1>
 </div>
 
@@ -61,7 +65,7 @@
             @foreach (var item in Model.PageList)
             {
                 <tr align="center">
-                    <td>@item.CustomerId</td>
+                    <td>@(index++)</td>
                     <td>@item.ShopNo</td>
                     <td>@item.Name</td>
                     <td>@item.Abbreviation</td>
@@ -75,9 +79,8 @@
                     <td>@item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
                     <td>@item.Salesman</td>
                     <td>
-                        <a href="http://www.qingfeng.com/staff/setrole?userId=@(item.CustomerId)" class="setting">编辑</a>
-                        <a href="http://www.qingfeng.com/staff/setrole?userId=@(item.CustomerId)" class="setting">编辑</a>
-                        <a href="http://www.qingfeng.com/staff/edit?userId=@(item.CustomerId)" class="setting">生成二维码</a>
+                        <a href="/customer/edit/@(item.CustomerId)" class="settings">编辑</a>
+                        <a href="/customer/createQrCode?customerId=@(item.CustomerId)">查看二维码</a>
                     </td>
                 </tr>
             }
@@ -86,12 +89,18 @@
 </div>
 
 <script type="text/javascript">
-    $('.back-to-list').off('click').on('click', function() {
+    $('.back-to-list').off('click').on('click', function () {
         var url = $('#page-content').attr('data-back-url');
         if (!url) {
             url = $(this).attr('href');
         }
 
+        $.getPageContent({ url: url });
+        return false;
+    });
+
+    $(".settings").off('click').on('click', function() {
+        var url = $(this).attr('href');
         $.getPageContent({ url: url });
         return false;
     });
@@ -165,11 +174,7 @@
             var phone = $("#phone").val();
             var status = $("#status").val();
 
-            if (keyword === '' && phone === ''&& status === "-1") {
-                layer.alert("请输入搜索条件");
-                return;
-            }
-            var url = "/customer/index" + '?keyWords=' + keyword + "&phone=" + phone;
+            var url = "/customer/index" + '?keyWords=' + keyword + "&phone=" + phone + "&status=" + status;
             $.getPageContent({ url: url });
             return false;
         });
@@ -179,6 +184,21 @@
             $.getPageContent({ url: url });
             return false;
         });
+
+        $("#down-load").click(function () {
+            layer.confirm("是否确定生成并且下载二维码压缩包?", function () {
+                location.href = "/customer/download";
+                layer.closeAll();
+            });
+        });
+
+        $("#export").click(function () {
+            layer.confirm("是否确定生成并且下载Excel文件?", function () {
+                location.href = "/customer/export";
+                layer.closeAll();
+            });
+        });
+
     });
 </script>
 

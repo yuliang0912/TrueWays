@@ -2,7 +2,190 @@
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var index = 1;
 }
 
-<h2>Index</h2>
+@model TrueWays.Core.Models.Result.ApiPageList<TrueWays.Core.Models.OrderInfo>
+
+<style type="text/css">
+    .red {
+        color: red;
+    }
+
+    .green {
+        color: green;
+    }
+</style>
+<div class="page-header">
+    <h1 class="form-inline">
+        商户管理：
+        <small>
+            <i class="icon-search"></i>
+            <div class="form-group">
+                <input type="text" name="staff_keyword" id="keyWords" value="@(ViewBag.keyWords)" style="width: 160px;" class="form-control input-sm" placeholder="请输入商户姓名">
+            </div>
+            <div class="form-group">
+                <input type="text" name="staff_keyword" id="phone" value="@(ViewBag.phone)" style="width: 160px;" class="form-control input-sm" placeholder="请输入手机号码">
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="status">状态</label>
+                <select name="status" id="status" class="form-control input-sm filter_goods">
+                    <option value="-1">状态</option>
+                    <option value="0" @(ViewBag.status == 0 ? "selected" : "" )>有效</option>
+                    <option value="1" @(ViewBag.status == 1 ? "selected" : "" )>无效</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary btn-sm " id="staff-search">搜索</button>
+            <button type="button" class="btn btn-primary btn-sm " id="export">导出Excel</button>
+        </small>
+        <a href="/customer/add" class="btn btn-info btn-sm pull-right settings"> <i class="glyphicon glyphicon-plus"></i> 添加商户</a>
+    </h1>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>序号</th>
+                <th>订单编号</th>
+                <th>商户名称</th>
+                <th>联系人</th>
+                <th>固定电话</th>
+                <th>手机</th>
+                <th>地址</th>
+                <th>状态</th>
+                <th>提交时间</th>
+                <th>操作员</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.PageList)
+            {
+                <tr align="center">
+                    <td>@(index++)</td>
+                    <td>@item.OrderNo</td>
+                    <td>@item.ShopName</td>
+                    <td>@item.ContactName</td>
+                    <td>@item.Phone</td>
+                    <td>@item.Mobile</td>
+                    <td>@item.Address</td>
+                    <td>
+                        <span class="label @(item.OrderStatus == 0 ? "label-success" : "label-warning")">@(item.OrderStatus == 0 ? "有效" : "无效")</span>
+                    </td>
+                    <td>@item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                    <td>@item.Technician</td>
+                    <td>
+                        <a href="/customer/edit/@(item.OrderId)" class="settings">编辑</a>
+                        <a href="/customer/createQrCode?customerId=@(item.OrderId)">关闭</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $('.back-to-list').off('click').on('click', function () {
+        var url = $('#page-content').attr('data-back-url');
+        if (!url) {
+            url = $(this).attr('href');
+        }
+
+        $.getPageContent({ url: url });
+        return false;
+    });
+
+    $(".settings").off('click').on('click', function() {
+        var url = $(this).attr('href');
+        $.getPageContent({ url: url });
+        return false;
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $.etopConfirm();
+        $.showModal({
+            formId: 'user-form',
+            beforeSubmit: function(formData, jqForm, options) {
+                var l = formData.length;
+                for (var i = 0; i < l; i++) {
+                    if (formData[i].value == '') {
+                        if (formData[i].name == 'username' || formData[i].name == 'password' || formData[i].name == 'password_confirm') {
+                            $('#' + formData[i].name).parents('.form-group').addClass('has-error');
+                            return false;
+                        } else {
+                            $('#' + formData[i].name).parents('.form-group').removeClass('has-error');
+                        }
+                    } else {
+                        $('#' + formData[i].name).parents('.form-group').removeClass('has-error');
+                    }
+                }
+                return true;
+            },
+            success: function(response, status) {
+                if (response.error == 0) {
+                    $('#etop-modal').modal('hide');
+                    $('#etop-modal').on('hidden.bs.modal', function(e) {
+                        $.pageReload();
+                    });
+                } else {
+                    if (response.error == 9) {
+                        var data = response.data;
+                        var msg = '';
+                        for (key in data) {
+                            msg += data[key] + '\r\n';
+                        }
+                        alert(msg);
+                    } else {
+                        alert(response.msg);
+                    }
+                }
+
+                return false;
+            },
+        });
+        $.showModal({
+            selector: '.setting',
+            formId: 'setting-form',
+            beforeSubmit: function(formData, jqForm, options) {
+                return true;
+            },
+            success: function(response, status) {
+                alert(response.msg);
+                if (response.error == 0) {
+                    $('#etop-modal').modal('hide');
+                    $.pageReload();
+                }
+                return false;
+            },
+        });
+
+        $('#staff-search').click(function() {
+            var keyword = $('#keyWords').val();
+            var phone = $("#phone").val();
+            var status = $("#status").val();
+
+            var url = "/customer/index" + '?keyWords=' + keyword + "&phone=" + phone + "&status=" + status;
+            $.getPageContent({ url: url });
+            return false;
+        });
+
+        $('.pagination a').click(function() {
+            var url = $(this).attr('href');
+            $.getPageContent({ url: url });
+            return false;
+        });
+
+        $("#export").click(function() {
+            layer.confirm("是否确定生成并且下载Excel文件?", function() {
+                location.href = "/customer/export";
+                layer.closeAll();
+            });
+        });
+    });
+</script>
+
+
 

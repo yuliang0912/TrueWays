@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using ClosedXML.Excel;
+using TrueWays.Core.ActionResultExtensions;
+using TrueWays.Core.Common.Extensions;
 using TrueWays.Core.Models;
 using TrueWays.Core.Models.Result;
 using TrueWays.Core.Service;
@@ -43,13 +46,55 @@ namespace TrueWays.Web.Controllers
             return View();
         }
 
+        public ActionResult Edit(int id)
+        {
+            var model = CustomerService.Instance.Get(new {customerId = id});
+            if (model == null)
+            {
+                return Content("参数错误");
+            }
+            return View(model);
+        }
+
         public ActionResult QrCode(int id)
         {
             return View();
         }
 
-        //[AdminAuthorize]
-        public ActionResult DownLoad()
+        /// <summary>
+        /// 创建二维码
+        /// </summary>
+        /// <param name="customerId"></param>
+        /// <returns></returns>
+        public ActionResult CreateQrCode(int customerId)
+        {
+            var model = CustomerService.Instance.Get(new {customerId});
+            if (model == null)
+            {
+                return Content("参数错误");
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                QrCodeHelper.GetQrCode("http://service.trueways.com/qrcode/" + customerId, ms);
+                var httpResponse = HttpContext.Response;
+                httpResponse.Clear();
+                httpResponse.Buffer = true;
+                httpResponse.Charset = Encoding.UTF8.BodyName;
+                httpResponse.AppendHeader("Content-Disposition", "attachment;filename=" + model.Name + ".png");
+                httpResponse.ContentEncoding = Encoding.UTF8;
+                httpResponse.ContentType = "application/x-plt; charset=UTF-8";
+                ms.WriteTo(httpResponse.OutputStream);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 下载二维码压缩包
+        /// </summary>
+        /// <returns></returns>
+        public void DownLoad()
         {
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "Content\\ImageFiles\\";
 
@@ -70,9 +115,8 @@ namespace TrueWays.Web.Controllers
             var idList = new List<int> {1, 2, 3, 4, 5, 6, 7, 8};
 
             var qrCodeDirectory = baseDirectory + "QrCode\\";
-            foreach (var item in idList)
+            foreach (var item in idList.Where(item => !System.IO.File.Exists(qrCodeDirectory + item + ".png")))
             {
-                if (System.IO.File.Exists(qrCodeDirectory + item + ".png")) continue;
                 using (var ms = new MemoryStream())
                 {
                     QrCodeHelper.GetQrCode("http://www.ciwong.com/qrcode/" + item, ms);
@@ -106,8 +150,138 @@ namespace TrueWays.Web.Controllers
                 files.Close();
                 httpResponse.BinaryWrite(byteFile);
             }
+        }
 
-            return null;
+        /// <summary>
+        /// 导出Excel
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Export()
+        {
+            var list = CustomerService.Instance.GetList(null).OrderBy(t => t.CreateDate).ToList();
+
+            var workbook = new XLWorkbook();
+            workbook.Worksheets.Add("Sheet1");
+            var workSheet = workbook.Worksheet(1);
+            workSheet.Cell(1, 1).Value = "序号";
+            workSheet.Cell(1, 2).Value = "商家编码";
+            workSheet.Cell(1, 3).Value = "商家名称";
+            workSheet.Cell(1, 4).Value = "简称";
+            workSheet.Cell(1, 5).Value = "联系人";
+            workSheet.Cell(1, 6).Value = "固定电话";
+            workSheet.Cell(1, 7).Value = "手机";
+            workSheet.Cell(1, 8).Value = "地址";
+            workSheet.Cell(1, 9).Value = "状态";
+            workSheet.Cell(1, 10).Value = "业务员";
+            workSheet.Cell(1, 11).Value = "创建时间";
+
+            int rows = 2, index = 1;
+            foreach (var model in list)
+            {
+                workSheet.Cell(rows, 1).Value = index++;
+                workSheet.Cell(rows, 2).Value = model.ShopNo;
+                workSheet.Cell(rows, 3).Value = model.Name;
+                workSheet.Cell(rows, 4).Value = model.Abbreviation;
+                workSheet.Cell(rows, 5).Value = model.ContactName;
+                workSheet.Cell(rows, 6).Value = model.Phone;
+                workSheet.Cell(rows, 7).Value = model.Mobile;
+                workSheet.Cell(rows, 8).Value = model.Address;
+                workSheet.Cell(rows, 9).Value = model.Status == 0 ? "有效" : "无效";
+                workSheet.Cell(rows, 10).Value = model.Salesman;
+                workSheet.Cell(rows, 11).Value = model.CreateDate.ToString("yyyy-MM-dd hh:mm:ss");
+                rows++;
+            }
+
+            workSheet.Rows(1, 1000).Height = 20;
+            workSheet.Columns(1, 100).Width = 25;
+            workSheet.Range("A1:K1").Style.Fill.BackgroundColor = XLColor.Green;
+            workSheet.Range("A1:K1").Style.Font.SetFontColor(XLColor.Yellow);
+            workSheet.Range("A1:K1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            return new ExportExcelResult
+            {
+                WorkBook = workbook,
+                FileName = "客户" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx"
+            };
+        }
+
+        [HttpPost]
+        public JsonResult AddCustomer(HttpPostedFileBase file, CustomerInfo model)
+        {
+            if (file != null && (string.Empty.Equals(file.FileName) || !file.ContentType.StartsWith("image/")))
+            {
+                return Json(new ApiResult<int>(2)
+                {
+                    ErrorCode = 1,
+                    Message = "当前文件格式不正确,请确保正确的图片!"
+                });
+            }
+
+            if (file != null)
+            {
+                var fileName = Guid.NewGuid() +
+                               file.FileName.Substring(file.FileName.LastIndexOf(".", StringComparison.Ordinal));
+
+                file.SaveAs(AppDomain.CurrentDomain.BaseDirectory + "Content\\ImageFiles\\Logo\\" + fileName);
+
+                model.Logo = "/Content/ImageFiles/Logo/" + fileName;
+            }
+
+            var result = CustomerService.Instance.Create(model);
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult EditCustomer(HttpPostedFileBase file, CustomerInfo model)
+        {
+            if (file != null && (string.Empty.Equals(file.FileName) || !file.ContentType.StartsWith("image/")))
+            {
+                return Json(new ApiResult<int>(2)
+                {
+                    ErrorCode = 1,
+                    Message = "当前文件格式不正确,请确保正确的图片!"
+                });
+            }
+
+            var customer = CustomerService.Instance.Get(new { model.CustomerId });
+
+            if (customer == null)
+            {
+                return Json(new ApiResult<int>(3)
+                {
+                    ErrorCode = 1,
+                    Message = "参数错误!"
+                });
+            }
+
+            if (file != null)
+            {
+                var fileName = Guid.NewGuid() +
+                               file.FileName.Substring(file.FileName.LastIndexOf(".", StringComparison.Ordinal));
+
+                file.SaveAs(AppDomain.CurrentDomain.BaseDirectory + "Content\\ImageFiles\\Logo\\" + fileName);
+
+                model.Logo = "/Content/ImageFiles/Logo/" + fileName;
+            }
+            else
+            {
+                model.Logo = Request.Form["deleteLogo"] == "1" ? string.Empty : customer.Logo;
+            }
+
+            var result = CustomerService.Instance.Update(new
+            {
+                model.ContactName,
+                model.Name,
+                model.Address,
+                model.Remark,
+                model.Salesman,
+                model.Status,
+                model.Abbreviation,
+                model.Logo,
+            }, new {model.CustomerId});
+
+            return Json(result ? 1 : 0);
         }
     }
 }
