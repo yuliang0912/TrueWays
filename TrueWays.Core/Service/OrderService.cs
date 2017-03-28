@@ -29,5 +29,28 @@ namespace TrueWays.Core.Service
         {
             return _orderInfoRepository.GetList(condition);
         }
+
+        public bool Update(object model, object condition)
+        {
+            return _orderInfoRepository.Update(model, condition);
+        }
+
+        public OrderInfo GetLast(object condition)
+        {
+            return _orderInfoRepository.Get(condition);
+        }
+
+        public bool CreateOrder(OrderInfo order)
+        {
+            order.CreateDate = DateTime.Now;
+            order.HandleDate = new DateTime(2000, 1, 1);
+            order.EndDate = new DateTime(2000, 1, 1);
+            order.CommunicationRecord = string.Empty;
+            order.FaultContent = string.Empty;
+            order.Remark = string.Empty;
+            order.HandleName = string.Empty;
+            order.Technician = string.Empty;
+            return _orderInfoRepository.Insert(order) > 0;
+        }
     }
 }

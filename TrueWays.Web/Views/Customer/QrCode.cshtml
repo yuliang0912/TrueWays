@@ -3,7 +3,7 @@
     ViewBag.Title = "QrCode";
     Layout = null;
 }
-
+@model TrueWays.Core.Models.CustomerInfo
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +14,8 @@
     <meta name="viewport" content="height=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-
+    <script type="text/javascript" src="/contentV2/js/jquery.min.js"></script>
+    <script src="/content/js/qingfeng.core.js"></script>
     <style>
         * {
             vertical-align: baseline;
@@ -161,39 +162,67 @@
         <div class="con-tip">厨卫士客服将在10分钟内与您联系<br />请确保电话号码准确和保持通畅</div>
         <div class="tab-content">
             <div class="tab-pane">
-                <form class="form-horizontal" action="#" method="post">
+                <form class="form-horizontal" id="order-form" action="/customer/AddOrder" method="post">
                     <div class="item-content">
                         <div class="item-label">店名</div>
                         <div class="item-input">
-                            <input type="text" name="" id="" value="龙门客栈" readonly="readonly">
+                            <input type="text" value="@Model.Name" readonly="readonly">
                         </div>
                         <div class="item-error"></div>
                     </div>
-
                     <div class="item-content">
                         <div class="item-label">联系人</div>
                         <div class="item-input">
-                            <input type="text" name="" id="" value="赵淮安" readonly="readonly">
+                            <input type="text" value="@Model.ContactName" readonly="readonly">
                         </div>
                         <div class="item-error"></div>
                     </div>
-
                     <div class="item-content">
-                        <div class="item-label">手机</div>
+                        <div class="item-label">@(string.IsNullOrWhiteSpace(Model.Phone) ? "手机" : "电话" )</div>
                         <div class="item-input">
-                            <input type="text" name="" id="" value="18623697752" readonly="readonly">
+                            <input type="text" value="@(string.IsNullOrWhiteSpace(Model.Phone) ? Model.Mobile  : Model.Phone)" readonly="readonly">
                         </div>
                         <div class="item-error"></div>
                     </div>
-
-                    <div class="item-btn">
-                        <input type="submit" id="" value="立即报修">
+                    <div id="item-cancel" class="item-cancel" style="display: none">取消报修</div>
+                    <div id="item-btn" class="item-btn">
+                        <input type="submit" id="submit" value="立即报修">
                     </div>
-                    <div class="item-cancel">取消报修</div>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="customerId" value="@Model.CustomerId" />
                 </form>
             </div>
         </div>
     </div>
 </body>
-</html>
+<script type="text/javascript">
+    $("#submit").click(function () {
+        layer.confirm("是否确定报修故障?", function () {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "/customer/AddOrder",
+                data: new FormData($('#order-form')[0]), // 你的formid
+                async: false,
+                processData: false,
+                contentType: false
+            }).done(function (res) {
+                if (res.data === 1) {
+                    layer.msg("报修成功");
+                    $("#item-cancel,#item-btn").toggle();
+                } else {
+                    layer.msg("报修失败");
+                }
+            }).fail(function () {
+                layer.alert("报修失败");
+            });
+        });
+    });
 
+    $("#item-cancel").click(function () {
+        layer.confirm("是否确定取消报修故障?",function() {
+
+        });
+    });
+</script>
+</html>

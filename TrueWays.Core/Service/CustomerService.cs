@@ -26,7 +26,7 @@ namespace TrueWays.Core.Service
         {
             var maxShopNo = Instance.GetMaxShopNo();
             model.ShopNo = maxShopNo + 1;
-            model.Name = model.Name ?? string.Empty;
+            model.ShopName = model.ShopName ?? string.Empty;
             model.Abbreviation = model.Abbreviation ?? string.Empty;
             model.ContactName = model.ContactName ?? string.Empty;
             model.Phone = model.Phone ?? string.Empty;

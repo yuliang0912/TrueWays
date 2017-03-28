@@ -33,7 +33,7 @@ namespace TrueWays.Core.Service
 
         public UserInfo Login(string loginName, string passWord, out bool isPass)
         {
-            var user = _userInfoRepository.Get(new { loginName });
+            var user = _userInfoRepository.Get(new {loginName});
 
             if (user == null)
             {
@@ -80,6 +80,11 @@ namespace TrueWays.Core.Service
             model.CreateDate = DateTime.Now;
 
             return _userInfoRepository.Insert(model) > 0 ? 1 : 0;
+        }
+
+        public bool Update(object model, object condition)
+        {
+            return _userInfoRepository.Update(model, condition);
         }
     }
 }

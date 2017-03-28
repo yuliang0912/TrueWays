@@ -12,7 +12,7 @@ namespace TrueWays.Core.Models
         public int ShopNo { get; set; }
 
 
-        public string Name { get; set; }
+        public string ShopName { get; set; }
 
         /// <summary>
         /// 简称

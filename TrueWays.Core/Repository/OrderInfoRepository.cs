@@ -47,5 +47,14 @@ namespace TrueWays.Core.Repository
                     out totalItem, buildWhereSql);
             }
         }
+
+        public OrderInfo GetLast(object condition)
+        {
+            using (var connection = GetReadConnection)
+            {
+                return
+                    connection.QueryList<OrderInfo>(condition, TableName, orderBy: "CreateDate DESC").FirstOrDefault();
+            }
+        }
     }
 }

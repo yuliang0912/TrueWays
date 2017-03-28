@@ -1,9 +1,13 @@
-﻿@if (Request.IsAjaxRequest())
+﻿@using TrueWays.Core
+@using TrueWays.Core.Models
+@if (Request.IsAjaxRequest())
 {
     @RenderBody()
     return;
 }
-
+@{
+    var userInfo = (ViewBag.User as UserInfo) ?? new UserInfo();
+}
 <!DOCTYPE html>
 <!-- saved from url=(0039)http://www.qingfeng.com/order/note/2472 -->
 <html lang="zh-CN">
@@ -95,7 +99,7 @@
                 content: function () {
                     var html = '您确认要把【' + $(this).data('name') + '】设为' + $(this).data('title') + '吗？';
                     html += '<div class="popover-footer"><button type="button" class="btn btn-primary btn-sm">确定</button>&nbsp;&nbsp;&nbsp;';
-                    html += '<button type="button" class="btn btn-default btn-sm">取消</button></div>'
+                    html += '<button type="button" class="btn btn-default btn-sm">取消</button></div>';
                     return html;
                 }
             }).on('shown.bs.popover', function () {
@@ -222,19 +226,22 @@
                             </li>
                         </ul>
                     </li>
-                    <li>
-                        <a hrfe="#" class="dropdown-toggle">
-                            <!-- 图标 -->
-                            <i class="icon-coffee"></i>
-                            <span class="menu-text">人员管理</span> <b class="arrow icon-angle-down"></b>
-                        </a>
-                        <ul class="submenu">
-                            <li class="menu">
-                                <a href="http://www.qingfeng.com/order/add">员工列表<i class="icon-double-angle-right"></i></a>
-                                <a href="http://www.qingfeng.com/order/index">添加员工<i class="icon-double-angle-right"></i></a>
-                            </li>
-                        </ul>
-                    </li>
+                    @if (userInfo.UserRole == UserRole.管理员)
+                    {
+                        <li>
+                            <a hrfe="#" class="dropdown-toggle">
+                                <!-- 图标 -->
+                                <i class="icon-coffee"></i>
+                                <span class="menu-text">人员管理</span> <b class="arrow icon-angle-down"></b>
+                            </a>
+                            <ul class="submenu">
+                                <li class="menu">
+                                    <a href="http://www.qingfeng.com/order/add">员工列表<i class="icon-double-angle-right"></i></a>
+                                    <a href="http://www.qingfeng.com/order/index">添加员工<i class="icon-double-angle-right"></i></a>
+                                </li>
+                            </ul>
+                        </li>
+                    }
                 </ul>
                 <!-- /.nav-list -->
                 <div class="sidebar-collapse" id="sidebar-collapse">

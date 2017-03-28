@@ -8,7 +8,6 @@ using System.Web;
 using System.Web.Mvc;
 using ClosedXML.Excel;
 using TrueWays.Core.ActionResultExtensions;
-using TrueWays.Core.Common.Extensions;
 using TrueWays.Core.Models;
 using TrueWays.Core.Models.Result;
 using TrueWays.Core.Service;
@@ -17,10 +16,9 @@ using TrueWays.Web.Fillter;
 
 namespace TrueWays.Web.Controllers
 {
-    [AdminAuthorize]
     public class CustomerController : BaseController
     {
-        // GET: Customer
+        [AdminAuthorize]
         public ActionResult Index(string keyWords = "", string phone = "", int status = -1, int page = 1,
             int pageSize = 20)
         {
@@ -41,11 +39,13 @@ namespace TrueWays.Web.Controllers
             });
         }
 
+        [AdminAuthorize]
         public ActionResult Add()
         {
             return View();
         }
 
+        [AdminAuthorize]
         public ActionResult Edit(int id)
         {
             var model = CustomerService.Instance.Get(new {customerId = id});
@@ -56,9 +56,46 @@ namespace TrueWays.Web.Controllers
             return View(model);
         }
 
+
         public ActionResult QrCode(int id)
         {
-            return View();
+            var model = CustomerService.Instance.Get(new {customerId = id});
+            if (model == null)
+            {
+                return Content("二维码错误,请联系客服");
+            }
+            var lastOrder = OrderService.Instance.GetLast(new {model.CustomerId, orderStatus = 0});
+            ViewBag.showCancel = lastOrder != null;
+            return View(model);
+        }
+
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public JsonResult AddOrder()
+        {
+            var customerId = Convert.ToInt32(Request.Form["customerId"] ?? string.Empty);
+            var model = CustomerService.Instance.Get(new {customerId});
+            if (model == null)
+            {
+                return Json(new ApiResult<int>(2)
+                {
+                    ErrorCode = 1,
+                    Message = "数据错误!"
+                });
+            }
+
+            var order = new OrderInfo()
+            {
+                OrderNo = "M" + Core.Common.Extensions.StringExtensions.GetLongNo(),
+                CustomerId = model.CustomerId,
+                ContactName = model.ContactName,
+                Phone = model.Phone,
+                Mobile = model.Mobile,
+                ShopName = model.ShopName,
+                Address = model.Address
+            };
+            var result = OrderService.Instance.CreateOrder(order);
+            return Json(result);
         }
 
         /// <summary>
@@ -66,6 +103,7 @@ namespace TrueWays.Web.Controllers
         /// </summary>
         /// <param name="customerId"></param>
         /// <returns></returns>
+        [AdminAuthorize]
         public ActionResult CreateQrCode(int customerId)
         {
             var model = CustomerService.Instance.Get(new {customerId});
@@ -81,7 +119,7 @@ namespace TrueWays.Web.Controllers
                 httpResponse.Clear();
                 httpResponse.Buffer = true;
                 httpResponse.Charset = Encoding.UTF8.BodyName;
-                httpResponse.AppendHeader("Content-Disposition", "attachment;filename=" + model.Name + ".png");
+                httpResponse.AppendHeader("Content-Disposition", "attachment;filename=" + model.ShopName + ".png");
                 httpResponse.ContentEncoding = Encoding.UTF8;
                 httpResponse.ContentType = "application/x-plt; charset=UTF-8";
                 ms.WriteTo(httpResponse.OutputStream);
@@ -94,6 +132,7 @@ namespace TrueWays.Web.Controllers
         /// 下载二维码压缩包
         /// </summary>
         /// <returns></returns>
+        [AdminAuthorize]
         public void DownLoad()
         {
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory + "Content\\ImageFiles\\";
@@ -156,6 +195,7 @@ namespace TrueWays.Web.Controllers
         /// 导出Excel
         /// </summary>
         /// <returns></returns>
+        [AdminAuthorize]
         public ActionResult Export()
         {
             var list = CustomerService.Instance.GetList(null).OrderBy(t => t.CreateDate).ToList();
@@ -180,7 +220,7 @@ namespace TrueWays.Web.Controllers
             {
                 workSheet.Cell(rows, 1).Value = index++;
                 workSheet.Cell(rows, 2).Value = model.ShopNo;
-                workSheet.Cell(rows, 3).Value = model.Name;
+                workSheet.Cell(rows, 3).Value = model.ShopName;
                 workSheet.Cell(rows, 4).Value = model.Abbreviation;
                 workSheet.Cell(rows, 5).Value = model.ContactName;
                 workSheet.Cell(rows, 6).Value = model.Phone;
@@ -206,6 +246,7 @@ namespace TrueWays.Web.Controllers
         }
 
         [HttpPost]
+        [AdminAuthorize]
         public JsonResult AddCustomer(HttpPostedFileBase file, CustomerInfo model)
         {
             if (file != null && (string.Empty.Equals(file.FileName) || !file.ContentType.StartsWith("image/")))
@@ -233,6 +274,7 @@ namespace TrueWays.Web.Controllers
         }
 
         [HttpPost]
+        [AdminAuthorize]
         public JsonResult EditCustomer(HttpPostedFileBase file, CustomerInfo model)
         {
             if (file != null && (string.Empty.Equals(file.FileName) || !file.ContentType.StartsWith("image/")))
@@ -244,7 +286,7 @@ namespace TrueWays.Web.Controllers
                 });
             }
 
-            var customer = CustomerService.Instance.Get(new { model.CustomerId });
+            var customer = CustomerService.Instance.Get(new {model.CustomerId});
 
             if (customer == null)
             {
@@ -272,7 +314,7 @@ namespace TrueWays.Web.Controllers
             var result = CustomerService.Instance.Update(new
             {
                 model.ContactName,
-                model.Name,
+                model.ShopName,
                 model.Address,
                 model.Remark,
                 model.Salesman,

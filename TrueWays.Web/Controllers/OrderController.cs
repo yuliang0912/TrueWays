@@ -22,7 +22,8 @@ namespace TrueWays.Web.Controllers
 
             int totalItem;
 
-            var list = OrderService.Instance.SearchOrders(orderNo, phone, shopName, orderStatus, page, pageSize, out totalItem);
+            var list = OrderService.Instance.SearchOrders(orderNo, phone, shopName, orderStatus, page, pageSize,
+                out totalItem);
 
             ViewBag.orderNo = orderNo;
             ViewBag.phone = phone;
@@ -89,8 +90,21 @@ namespace TrueWays.Web.Controllers
             return new ExportExcelResult
             {
                 WorkBook = workbook,
-                FileName = "客户" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx"
+                FileName = "订单" + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx"
             };
+        }
+
+        public JsonResult UpdateStatus(int orderId, int orderStatus)
+        {
+            var result = OrderService.Instance.Update(new {orderStatus}, new {orderId});
+
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult EditOrder(OrderInfo order)
+        {
+            return Json(true);
         }
     }
 }

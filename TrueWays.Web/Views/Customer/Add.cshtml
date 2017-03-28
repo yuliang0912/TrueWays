@@ -45,7 +45,7 @@
         <table class="table">
             <tr>
                 <td class="td_title">商户名称：</td>
-                <td width="300"><input type="text" name="name" id="name" maxlength="40" class="td_input" /></td>
+                <td width="300"><input type="text" name="shopName" id="shopName" maxlength="40" class="td_input" /></td>
                 <td class="td_title">简称：</td>
                 <td><input type="text" name="abbreviation" id="abbreviation" maxlength="40" class="td_input" /></td>
             </tr>
@@ -106,8 +106,8 @@
     });
 
     $("#order-save").click(function() {
-        if ($("#name").val().length < 1) {
-            return layer.tips("请输入商户名", $("#name"), { tips: [2, '#438eb9'] });
+        if ($("#shopName").val().length < 1) {
+            return layer.tips("请输入商户名", $("#shopName"), { tips: [2, '#438eb9'] });
         }
         if ($("#abbreviation").val().length < 1) {
             return layer.tips("请输入商户简称", $("#abbreviation"), { tips: [2, '#438eb9'] });

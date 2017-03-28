@@ -8,6 +8,8 @@ namespace TrueWays.Core.Models
 
         public string OrderNo { get; set; }
 
+        public int CustomerId { get; set; }
+
         public string ShopName { get; set; }
 
         public string ContactName { get; set; }
@@ -53,6 +55,9 @@ namespace TrueWays.Core.Models
 
         public DateTime EndDate { get; set; }
 
+        /// <summary>
+        /// 0:未处理 1:已处理 2:已拒绝 3:已关闭
+        /// </summary>
         public int OrderStatus { get; set; }
     }
 }
