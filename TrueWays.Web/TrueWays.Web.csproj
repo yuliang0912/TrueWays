@@ -260,6 +260,7 @@
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Fillter\AdminAuthorize.cs" />
     <Compile Include="FormsAuth\FormsAuthenticationService.cs" />
     <Compile Include="FormsAuth\FormsAuthenticationWrapper.cs" />
@@ -283,6 +284,10 @@
     <Content Include="Views\Customer\Add.cshtml" />
     <Content Include="Views\Order\Index.cshtml" />
     <Content Include="Views\Customer\Edit.cshtml" />
+    <Content Include="Views\Order\Edit.cshtml" />
+    <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Views\User\Add.cshtml" />
+    <Content Include="Views\User\Edit.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

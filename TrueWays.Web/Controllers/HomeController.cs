@@ -27,7 +27,7 @@ namespace TrueWays.Web.Controllers
                 UserName = "管理员",
                 LoginName = "admin",
                 PassWord = "123456",
-                UserRole = UserRole.管理员,
+                UserRole = UserRole.系统管理员,
                 Phone = "7771730",
                 Mobile = "18923803593"
             });
@@ -75,6 +75,12 @@ namespace TrueWays.Web.Controllers
             }
 
             return Json(UserService.Instance.UpdatePassWord(user, oldPwd, newPwd));
+        }
+
+        public ActionResult Logout()
+        {
+            FormsAuthenticationWrapper.Instance.SignOut();
+            return Redirect("/home/login");
         }
     }
 }

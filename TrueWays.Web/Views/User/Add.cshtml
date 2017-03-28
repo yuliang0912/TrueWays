@@ -1,0 +1,136 @@
+﻿
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style type="text/css">
+    .panel {
+        width: 99%;
+        margin: 10px auto;
+    }
+
+    td {
+        vertical-align: middle !important;
+    }
+
+    th {
+        text-align: center !important;
+    }
+
+    .td_title {
+        width: 100px;
+        text-align: center;
+    }
+
+    .td_input {
+        width: 200px;
+    }
+
+    .td-left {
+        width: 350px;
+    }
+</style>
+<div class="page-header">
+    <h1 class="form-inline">
+        添加后台人员
+        <a href="/user/index" class="btn btn-info btn-sm pull-right back-to-list pageCount"> <i class="icon-circle-arrow-left"></i> 返回列表</a>
+    </h1>
+
+</div>
+<form class="form-inline" role="form" id="order-form" method="post" enctype="multipart/form-data" action="/user/addUser">
+    <div class="panel panel-info">
+        <!-- Default panel contents -->
+        <div class="panel-heading">用户详情</div>
+        <table class="table">
+            <tr>
+                <td class="td_title">用户名：</td>
+                <td width="300"><input type="text" name="userName" id="userName" maxlength="40" class="td_input" /></td>
+                <td class="td_title">手机：</td>
+                <td><input type="text" name="mobile" id="mobile" maxlength="40" class="td_input" /></td>
+            </tr>
+            <tr>
+                <td class="td_title">用户角色：</td>
+                <td width="300">
+                    <select id="userRole" name="userRole">
+                        <option value="1">系统管理员</option>
+                        <option value="2">客服</option>
+                    </select>
+                </td>
+                <td class="td_title">状态：</td>
+                <td>
+                    <select id="status" name="status">
+                        <option value="0">有效</option>
+                        <option value="1">无效</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td class="td_title">登录账号：</td>
+                <td width="300"><input type="text" name="loginName" id="loginName" maxlength="24" class="td_input" /></td>
+                <td class="td_title">密码：</td>
+                <td><input type="text" name="passWord" id="passWord" maxlength="24" class="td_input" /></td>
+            </tr>
+        </table>
+    </div>
+  
+    <div style="width:300px; margin:5px auto;">
+        <button type="button" class="btn btn-primary" id="order-save">提交</button>
+        <button type="button" class="btn btn-default" id="cancel" data-dismiss="modal">返回</button>
+    </div>
+</form>
+<script type="text/javascript">
+    $('.back-to-list').off('click').on('click', function () {
+        var url = $('#page-content').attr('data-back-url');
+        if (!url) {
+            url = $(this).attr('href');
+        }
+
+        $.getPageContent({ url: url });
+        return false;
+    });
+
+    $("#order-save").click(function () {
+        if ($("#userName").val().length < 1) {
+            return layer.tips("请输入用户名", $("#userName"), { tips: [2, '#438eb9'] });
+        }
+        if ($("#mobile").val().length < 1) {
+            return layer.tips("请输入手机号", $("#mobile"), { tips: [2, '#438eb9'] });
+        }
+        if ($("#loginName").val().length < 1) {
+            return layer.tips("请输入登录名", $("#loginName"), { tips: [2, '#438eb9'] });
+        }
+        if ($("#passWord").val().length < 6) {
+            return layer.tips("请输入大于6位字符的密码", $("#passWord"), { tips: [2, '#438eb9'] });
+        }
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "/user/addUser",
+            data: new FormData($('#order-form')[0]),
+            async: false,
+            processData: false,
+            contentType: false
+        }).done(function (res) {
+            if (res.data === 1) {
+                layer.confirm("添加成功", function () {
+                    $.getPageContent({ url: "/user/index" });
+                    layer.closeAll();
+                });
+            } else if (res.data === 2) {
+                layer.msg(res.message);
+            } else {
+                layer.msg("添加失败");
+            }
+        }).fail(function (res) {
+            layer.alert("添加失败");
+        });
+        return true;
+    });
+
+    $("#cancel").click(function () {
+        $.getPageContent({ url: "/user/index" });
+    });
+</script>
+

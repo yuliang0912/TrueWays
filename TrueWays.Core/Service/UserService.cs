@@ -26,9 +26,10 @@ namespace TrueWays.Core.Service
         }
 
 
-        public List<UserInfo> GetPageList(object condition, int page, int pageSize, out int totalItem)
+        public List<UserInfo> GetPageList(object condition, int page, int pageSize, out int totalItem,
+            string orderBy = "createDate DESC")
         {
-            return _userInfoRepository.GetPageList(condition, "", page, pageSize, out totalItem).ToList();
+            return _userInfoRepository.GetPageList(condition, orderBy, page, pageSize, out totalItem).ToList();
         }
 
         public UserInfo Login(string loginName, string passWord, out bool isPass)
@@ -50,14 +51,14 @@ namespace TrueWays.Core.Service
 
         public int UpdatePassWord(UserInfo user, string oldPwd, string newPwd)
         {
-            if (!string.Concat(user.UserName, PassWordSplitString, user.UserRole.GetHashCode(), oldPwd)
+            if (!string.Concat(user.LoginName, PassWordSplitString, user.UserRole.GetHashCode(), oldPwd)
                 .Hmacsha1(user.SaltValue).Equals(user.PassWord))
             {
                 return 2;
             }
 
             var newPassWord =
-                string.Concat(user.UserName, PassWordSplitString, user.UserRole.GetHashCode(), newPwd)
+                string.Concat(user.LoginName, PassWordSplitString, user.UserRole.GetHashCode(), newPwd)
                     .Hmacsha1(user.SaltValue);
 
             return _userInfoRepository.Update(new {passWord = newPassWord}, new {user.UserId}) ? 1 : 0;
@@ -82,9 +83,23 @@ namespace TrueWays.Core.Service
             return _userInfoRepository.Insert(model) > 0 ? 1 : 0;
         }
 
-        public bool Update(object model, object condition)
+        public bool Update(UserInfo model,string newPwd)
         {
-            return _userInfoRepository.Update(model, condition);
+            if (!string.IsNullOrWhiteSpace(newPwd))
+            {
+                model.PassWord =
+                    string.Concat(model.LoginName, PassWordSplitString, model.UserRole.GetHashCode(), newPwd)
+                        .Hmacsha1(model.SaltValue);
+            }
+
+            return _userInfoRepository.Update(new
+            {
+                model.UserName,
+                model.Mobile,
+                userRole = model.UserRole.GetHashCode(),
+                model.Status,
+                model.PassWord,
+            }, new {model.UserId});
         }
     }
 }

@@ -30,19 +30,26 @@ namespace TrueWays.Core.Repository
             }
             if (!string.IsNullOrEmpty(phone))
             {
-                additional += $"AND (phone = @phone OR mobile = @@phone) ";
+                additional += "AND (phone = @phone OR mobile = @phone) ";
             }
             if (orderStatus > 0)
             {
-                additional += $"AND orderStatus = @orderStatus ";
+                additional += "AND orderStatus = @orderStatus ";
+            }
+            if (!string.IsNullOrWhiteSpace(orderNo))
+            {
+                additional += "AND orderNo = @orderNo ";
             }
 
             Func<object, string> buildWhereSql =
-                (cond) => SqlMapperExtensions.BuildWhereSql(cond, false, additional, "shopName", "orderStatus", "phone");
+                (cond) =>
+                    SqlMapperExtensions.BuildWhereSql(cond, false, additional, "shopName", "orderStatus", "phone",
+                        "orderNo");
 
             using (var connection = GetReadConnection)
             {
-                return connection.QueryPaged<OrderInfo>(new {shopName, phone, orderStatus}, TableName, "CreateDate DESC",
+                return connection.QueryPaged<OrderInfo>(new {orderNo, shopName, phone, orderStatus}, TableName,
+                    "CreateDate DESC",
                     page, pageSize,
                     out totalItem, buildWhereSql);
             }

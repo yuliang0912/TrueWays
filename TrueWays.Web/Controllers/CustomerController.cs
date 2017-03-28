@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using ClosedXML.Excel;
+using TrueWays.Core;
 using TrueWays.Core.ActionResultExtensions;
 using TrueWays.Core.Models;
 using TrueWays.Core.Models.Result;
@@ -59,7 +60,7 @@ namespace TrueWays.Web.Controllers
 
         public ActionResult QrCode(int id)
         {
-            var model = CustomerService.Instance.Get(new {customerId = id});
+            var model = CustomerService.Instance.Get(new { customerId = id});
             if (model == null)
             {
                 return Content("二维码错误,请联系客服");
@@ -92,7 +93,8 @@ namespace TrueWays.Web.Controllers
                 Phone = model.Phone,
                 Mobile = model.Mobile,
                 ShopName = model.ShopName,
-                Address = model.Address
+                Address = model.Address,
+                OrderStatus = OrderStatus.待受理
             };
             var result = OrderService.Instance.CreateOrder(order);
             return Json(result);

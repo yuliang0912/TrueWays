@@ -1,0 +1,177 @@
+﻿
+@{
+    ViewBag.Title = "编辑订单";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using TrueWays.Core
+@model TrueWays.Core.Models.OrderInfo
+
+<style type="text/css">
+    .panel {
+        width: 99%;
+        margin: 10px auto;
+    }
+
+    td {
+        vertical-align: middle !important;
+    }
+
+    th {
+        text-align: center !important;
+    }
+
+    .td_title {
+        width: 100px;
+        text-align: center;
+    }
+
+    .td_input {
+        width: 200px;
+    }
+
+    .td-left {
+        width: 350px;
+    }
+</style>
+<div class="page-header">
+    <h1 class="form-inline">
+        编辑订单
+        <a href="/order/index" class="btn btn-info btn-sm pull-right back-to-list pageCount"> <i class="icon-circle-arrow-left"></i> 返回列表</a>
+    </h1>
+</div>
+<form class="form-inline" role="form" id="order-form" method="post" enctype="multipart/form-data" action="/order/editOrder">
+    <div class="panel panel-info">
+        <!-- Default panel contents -->
+        <div class="panel-heading">基本信息</div>
+        <input type="hidden" name="orderId" value="@Model.OrderId" />
+        <table class="table">
+            <tr>
+                <td class="td_title">订单编号：</td>
+                <td colspan="3"><input type="text" value="@Model.OrderNo" readonly="readonly" class="td_input" /></td>
+            </tr>
+            <tr>
+                <td class="td_title">商户名称：</td>
+                <td width="300"><input type="text" name="shopName" id="shopName" maxlength="40" value="@Model.ShopName" class="td_input" /></td>
+                <td class="td_title">联系人：</td>
+                <td><input type="text" name="contactName" id="contactName" value="@Model.ContactName" maxlength="40" class="td_input" /></td>
+            </tr>
+            <tr>
+                <td class="td_title">固定电话：</td>
+                <td width="300"><input type="text" name="phone" id="phone" maxlength="24" value="@Model.Phone" class="td_input" /></td>
+                <td class="td_title">手机：</td>
+                <td><input type="text" name="mobile" id="mobile" maxlength="24" value="@Model.Mobile" class="td_input" /></td>
+            </tr>
+            <tr>
+                <td class="td_title">地址：</td>
+                <td colspan="3"><input type="text" name="address" id="address" value="@Model.Address" maxlength="200" style="width: 500px;" /></td>
+            </tr>
+        </table>
+    </div>
+    <div class="panel panel-success">
+        <!-- Default panel contents -->
+        <div class="panel-heading" style="padding: 7px 15px;">
+            订单处理
+        </div>
+        <table class="table">
+            <tr>
+                <td class="td_title">价格：</td>
+                <td width="300"><input type="text" name="price" id="price" maxlength="40" value="@Model.Price" class="td_input" /></td>
+                <td class="td_title">维修技师：</td>
+                <td><input type="text" name="technician" id="technician" value="@Model.Technician" maxlength="40" class="td_input" /></td>
+            </tr>
+            <tr>
+                <td class="td_title">状态：</td>
+                <td>@Model.OrderStatus.ToString()</td>
+            </tr>
+        </table>
+        <div class="panel-body">
+            <div class="col-lg-10">
+                <div class="form-group">
+                    <label style="color: red">报修故障内容：</label><br />
+                    <textarea rows="3" cols="120" maxlength="5000" name="faultContent" id="faultContent" class="form-control">@Model.FaultContent</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-10">
+                <div class="form-group">
+                    <label>客户沟通记录：</label><br />
+                    <textarea rows="3" cols="120" maxlength="5000" name="communicationRecord" id="communicationRecord" class="form-control">@Model.CommunicationRecord</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-10">
+                <div class="form-group">
+                    <label>备注：</label><br />
+                    <textarea rows="2" cols="120" maxlength="5000" name="remark" id="remark" class="form-control">@Model.Remark</textarea>
+                </div>
+            </div>
+        </div>
+        <table class="table">
+            <tr>
+                <td class="td_title">提交时间：</td>
+                <td style="width: 300px;">@Model.CreateDate</td>
+                <td class="td_title">受理时间：</td>
+                <td>@Model.HandleDate</td>
+            </tr>
+            <tr>
+                <td class="td_title">操作员：</td>
+                <td>@Model.HandleName</td>
+            </tr>
+        </table>
+        <!-- /.row -->
+    </div>
+    <input type="hidden" name="orderStauts" id="orderStauts" value="3" />
+    <div style="width: 300px; margin: 5px auto;">
+        @if (Model.OrderStatus == OrderStatus.待受理)
+        {
+            <button type="button" class="btn btn-primary" onclick="handle(2)">受理</button>
+            <button type="button" class="btn btn-default" onclick="handle(3)">交易关闭</button>
+        }
+        else
+        {
+            <button type="button" class="btn btn-primary" onclick="handle(-1)">保存</button>
+        }
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel" data-back-url="/order/index">返回</button>
+    </div>
+</form>
+<script type="text/javascript">
+    $('.back-to-list').off('click').on('click', function() {
+        var url = $('#page-content').attr('data-back-url');
+        if (!url) {
+            url = $(this).attr('href');
+        }
+
+        $.getPageContent({ url: url });
+        return false;
+    });
+
+    $("#cancel").click(function() {
+        $.getPageContent({ url: "/order/index" });
+    });
+
+    function handle(orderStatus) {
+        $("#orderStauts").val(orderStatus);
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "/order/editOrder?orderStatus=" + orderStatus,
+            data: new FormData($('#order-form')[0]), // 你的formid
+            async: false,
+            processData: false,
+            contentType: false
+        }).done(function(res) {
+            if (res.data === true) {
+                layer.confirm("操作成功", function() {
+                    $.getPageContent({ url: "/order/index" });
+                    layer.closeAll();
+                });
+            } else {
+                layer.msg(res.message);
+            }
+        }).fail(function(res) {
+            layer.alert("保存失败");
+        });
+    }
+</script>

@@ -40,6 +40,12 @@ namespace TrueWays.Core.Service
             return _orderInfoRepository.Get(condition);
         }
 
+
+        public OrderInfo Get(object condition)
+        {
+            return _orderInfoRepository.Get(condition);
+        }
+
         public bool CreateOrder(OrderInfo order)
         {
             order.CreateDate = DateTime.Now;

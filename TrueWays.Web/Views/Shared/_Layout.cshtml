@@ -9,7 +9,6 @@
     var userInfo = (ViewBag.User as UserInfo) ?? new UserInfo();
 }
 <!DOCTYPE html>
-<!-- saved from url=(0039)http://www.qingfeng.com/order/note/2472 -->
 <html lang="zh-CN">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -173,18 +172,18 @@
     <div class="navbar navbar-default navbar-fixed-top" id="navbar">
         <div class="navbar-container" id="navbar-container">
             <div class="navbar-header pull-left">
-                <a href="http://www.qingfeng.com/order/note/2472#" class="navbar-brand"> <small> <i class="icon-leaf"></i> 厨卫士服务运营管理后台 </small> </a><!-- /.brand -->
+                <a href="/customer/index" class="navbar-brand"> <small> <i class="icon-leaf"></i> 厨卫士服务运营管理后台 </small> </a><!-- /.brand -->
             </div>
             <!-- /.navbar-header -->
             <div class="navbar-header pull-right" role="navigation">
                 <ul class="nav ace-nav">
                     <li class="light-blue">
-                        <a data-toggle="dropdown" href="http://www.qingfeng.com/order/note/2472#" class="dropdown-toggle"><span class="user-info"> <small>欢迎光临,</small> tony </span> <i class="icon-caret-down"></i> </a>
+                        <a data-toggle="dropdown" href="/customer/index" class="dropdown-toggle"><span class="user-info"> <small>欢迎光临,</small> @userInfo.UserName </span> <i class="icon-caret-down"></i> </a>
                         <ul class="user-menu pull-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
                             <!-- 个人菜单 -->
-                            <li> <a href="http://www.qingfeng.com/login/resetpassword" id="changepwd"> <i class="icon-user"></i> 修改密码 </a> </li>
+                            <li> <a id="changepwd" href="/home/test" data-toggle="modal"><i class="icon-user"></i>修改密码</a></li>
                             <li class="divider"></li>
-                            <li> <a href="http://www.qingfeng.com/login/logout"> <i class="icon-off"></i> 退出 </a> </li>
+                            <li> <a href="/home/logout"> <i class="icon-off"></i> 退出 </a> </li>
                         </ul>
                     </li>
                 </ul>
@@ -226,7 +225,7 @@
                             </li>
                         </ul>
                     </li>
-                    @if (userInfo.UserRole == UserRole.管理员)
+                    @if (userInfo.UserRole == UserRole.系统管理员)
                     {
                         <li>
                             <a hrfe="#" class="dropdown-toggle">
@@ -236,8 +235,8 @@
                             </a>
                             <ul class="submenu">
                                 <li class="menu">
-                                    <a href="http://www.qingfeng.com/order/add">员工列表<i class="icon-double-angle-right"></i></a>
-                                    <a href="http://www.qingfeng.com/order/index">添加员工<i class="icon-double-angle-right"></i></a>
+                                    <a href="/user/index">员工列表<i class="icon-double-angle-right"></i></a>
+                                    <a href="/user/add">添加员工<i class="icon-double-angle-right"></i></a>
                                 </li>
                             </ul>
                         </li>
@@ -259,17 +258,34 @@
         <!-- Modal 弹出层 -->
         <div class="modal fade" id="etop-modal" tabindex="-1" role="dialog" aria-labelledby="etop-modal-label">
             <div class="modal-dialog" role="document">
-                <div class="modal-content">
+                <div class="modal-content form-horizontal">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="关闭"><span aria-hidden="true">×</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                        <h4 class="modal-title" id="myModalLabel">修改密码</h4>
                     </div>
                     <div class="modal-body">
-                        ...
+                        <div class="form-group">
+                            <label for="old_password" class="col-sm-3 control-label">原登录密码</label>
+                            <div class="col-sm-6">
+                                <input onfocus="this.type='password'" class="form-control" id="old_password" name="old_password" value="" placeholder="请输入原登录密码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="col-sm-3 control-label">新登录密码</label>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control" id="password" name="password" value="" placeholder="请输入新登录密码">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password_confirm" class="col-sm-3 control-label">确认新登录密码</label>
+                            <div class="col-sm-6">
+                                <input type="password" class="form-control" id="password_confirm" name="password_confirm" value="" placeholder="请确认新登录密码">
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                        <button type="button" onclick="updatePwd()" class="btn btn-primary">保存</button>
                     </div>
                 </div>
             </div>
@@ -294,6 +310,7 @@
             return false;
         }
     });
+
 
     $('.supplier-login').off('click').on('click', function () {
         var url = $(this).attr('href');
@@ -326,5 +343,35 @@
             return false;
         });
     });
+
 </script>
+
+<script>
+    function updatePwd() {
+        var oldPwd = $("#old_password").val().trim();
+        var newPwd = $("#password").val().trim();
+        var confirmPwd = $("#password_confirm").val().trim();
+        if (newPwd !== confirmPwd) {
+            layer.msg("两次新密码不一致");
+            return;
+        }
+        if (oldPwd.length < 6 || newPwd.length < 6 || confirmPwd.length < 6) {
+            layer.msg("请输入大于6位的密码");
+            return;
+        }
+        $core.ajax.getJSON("/Home/UpdatePassWord", { oldPwd: oldPwd, newPwd: newPwd }, function (data) {
+            if (data === 1) {
+                layer.msg("修改成功");
+                $("#etop-modal").modal("hide");
+            } else if (data === 0) {
+                layer.msg("修改失败");
+            } else if (data === 2) {
+                layer.msg("原始密码错误");
+            } else {
+                layer.msg(this.message);
+            }
+        });
+    }
+</script>
+
 </html>

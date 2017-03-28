@@ -58,6 +58,6 @@ namespace TrueWays.Core.Models
         /// <summary>
         /// 0:未处理 1:已处理 2:已拒绝 3:已关闭
         /// </summary>
-        public int OrderStatus { get; set; }
+        public OrderStatus OrderStatus { get; set; }
     }
 }
