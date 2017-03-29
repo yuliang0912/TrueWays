@@ -79,7 +79,7 @@
                         <span>@(item.OrderStatus.ToString())</span>
                     </td>
                     <td>@item.CreateDate.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                    <td>@item.Technician</td>
+                    <td>@item.HandleName</td>
                     <td>
                         <a href="/order/edit/?orderId=@(item.OrderId)" class="settings">编辑</a>
                         @if (item.OrderStatus == OrderStatus.待受理)
@@ -90,6 +90,16 @@
                 </tr>
             }
         </tbody>
+        @if (Model.PageCount > 1)
+        {
+            <tfoot>
+                <tr align="center">
+                    <td colspan="11">
+                        @(Html.Raw(Model.GetPagerHtml(string.Format("/order/index?orderNo={0}&phone={1}&shopName={2}&orderStatus={3}&page={4}", ViewBag.orderNo, ViewBag.phone, ViewBag.shopName, ViewBag.orderStatus, "{0}"))))
+                    </td>
+                </tr>
+            </tfoot>
+        }
     </table>
 </div>
 

@@ -23,7 +23,7 @@ namespace TrueWays.Core.Repository
         {
             var additional = string.IsNullOrWhiteSpace(keyWords)
                 ? string.Empty
-                : "AND (name LIKE @keyWords OR contactName LIKE @keyWords) ";
+                : "AND (shopName LIKE @keyWords OR contactName LIKE @keyWords) ";
 
             if (!string.IsNullOrEmpty(phone))
             {

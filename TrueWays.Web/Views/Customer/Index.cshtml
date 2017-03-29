@@ -85,6 +85,16 @@
                 </tr>
             }
         </tbody>
+        @if (Model.PageCount > 1)
+        {
+            <tfoot>
+                <tr align="center">
+                    <td colspan="12">
+                        @(Html.Raw(Model.GetPagerHtml(string.Format("/customer/index?keyWords={0}&phone={1}&status={2}&page={3}", ViewBag.keyWords, ViewBag.phone, ViewBag.status, "{0}"))))
+                    </td>
+                </tr>
+            </tfoot>
+        }
     </table>
 </div>
 

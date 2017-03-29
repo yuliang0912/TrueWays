@@ -62,6 +62,16 @@
                 </tr>
             }
         </tbody>
+        @if (Model.PageCount > 1)
+        {
+            <tfoot>
+                <tr align="center">
+                    <td colspan="8">
+                        @(Html.Raw(Model.GetPagerHtml(string.Format("/user/index?userName={0}&page={1}", ViewBag.userName, "{0}"))))
+                    </td>
+                </tr>
+            </tfoot>
+        }
     </table>
 </div>
 

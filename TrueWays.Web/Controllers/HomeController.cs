@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Web;
@@ -36,9 +37,9 @@ namespace TrueWays.Web.Controllers
 
         public ActionResult QrCode()
         {
-            using (var ms = new MemoryStream())
+            var logoPath = AppDomain.CurrentDomain.BaseDirectory + "content\\images\\logo1.png";
+            using (var ms = QrCodeHelper.GetQRCode("http://www.baidu.com", logoPath))
             {
-                QrCodeHelper.GetQrCode("http://www.baidu.com", ms);
                 HttpResponseBase httpResponse = HttpContext.Response;
                 httpResponse.Clear();
                 httpResponse.Buffer = true;

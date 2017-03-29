@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -19,6 +18,8 @@ namespace TrueWays.Web.Controllers
 {
     public class CustomerController : BaseController
     {
+        private string logoPath = AppDomain.CurrentDomain.BaseDirectory + "content\\images\\logo1.png";
+
         [AdminAuthorize]
         public ActionResult Index(string keyWords = "", string phone = "", int status = -1, int page = 1,
             int pageSize = 20)
@@ -75,7 +76,7 @@ namespace TrueWays.Web.Controllers
         public JsonResult AddOrder()
         {
             var customerId = Convert.ToInt32(Request.Form["customerId"] ?? string.Empty);
-            var model = CustomerService.Instance.Get(new {customerId});
+            var model = CustomerService.Instance.Get(new { customerId });
             if (model == null)
             {
                 return Json(new ApiResult<int>(2)
@@ -84,10 +85,14 @@ namespace TrueWays.Web.Controllers
                     Message = "数据错误!"
                 });
             }
+            var contactName = Request.Form["contactName"];
+            var mobile = Request.Form["mobile"];
+            var phone = Request.Form["phone"];
+
 
             var order = new OrderInfo()
             {
-                OrderNo = "M" + Core.Common.Extensions.StringExtensions.GetLongNo(),
+                OrderNo = "WX" + Core.Common.Extensions.StringExtensions.GetLongNo(),
                 CustomerId = model.CustomerId,
                 ContactName = model.ContactName,
                 Phone = model.Phone,
@@ -96,6 +101,18 @@ namespace TrueWays.Web.Controllers
                 Address = model.Address,
                 OrderStatus = OrderStatus.待受理
             };
+            if (!string.IsNullOrWhiteSpace(contactName))
+            {
+                order.ContactName = contactName;
+            }
+            if (!string.IsNullOrWhiteSpace(mobile))
+            {
+                order.Mobile = mobile;
+            }
+            if (!string.IsNullOrWhiteSpace(phone))
+            {
+                order.Phone = phone;
+            }
             var result = OrderService.Instance.CreateOrder(order);
             return Json(result);
         }
@@ -108,15 +125,14 @@ namespace TrueWays.Web.Controllers
         [AdminAuthorize]
         public ActionResult CreateQrCode(int customerId)
         {
-            var model = CustomerService.Instance.Get(new {customerId});
+            var model = CustomerService.Instance.Get(new { customerId });
             if (model == null)
             {
                 return Content("参数错误");
             }
 
-            using (var ms = new MemoryStream())
+            using (var ms = QrCodeHelper.GetQRCode("http://sd.true-ways.com/customer/qrcode/" + customerId, logoPath))
             {
-                QrCodeHelper.GetQrCode("http://sd.true-ways.com/customer/qrcode/" + customerId, ms);
                 var httpResponse = HttpContext.Response;
                 httpResponse.Clear();
                 httpResponse.Buffer = true;
@@ -160,9 +176,8 @@ namespace TrueWays.Web.Controllers
             var qrCodeDirectory = baseDirectory + "QrCode\\";
             foreach (var item in list.Where(item => !System.IO.File.Exists(qrCodeDirectory + item.CustomerId + ".png")))
             {
-                using (var ms = new MemoryStream())
+                using (var ms = QrCodeHelper.GetQRCode("http://sd.true-ways.com/customer/qrcode/" + item.CustomerId, logoPath))
                 {
-                    QrCodeHelper.GetQrCode("http://sd.true-ways.com/customer/qrcode/" + item.CustomerId, ms);
                     var image = Image.FromStream(ms);
                     image.Save(qrCodeDirectory + item.CustomerId + ".png");
                 }

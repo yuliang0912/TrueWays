@@ -53,14 +53,14 @@ namespace TrueWays.Core.Common.Extensions
         {
             var difference = d1 - d2;
 
-            return $"{difference/d2:0.00%}";
+            return $"{difference / d2:0.00%}";
         }
 
         public static long GetLongNo()
         {
             System.Threading.Thread.Sleep(1); //保证yyyyMMddHHmmssffff唯一  
             var d = new Random(BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0));
-            var strUnique = DateTime.Now.ToString("yyMMddHHmmssff") + d.Next(100, 999);
+            var strUnique = DateTime.Now.ToString("yyyyMMddHHmmss") + d.Next(100, 999);
             return long.Parse(strUnique);
         }
     }

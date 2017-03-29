@@ -42,7 +42,7 @@ namespace TrueWays.Web.Controllers
 
         public ActionResult Edit(int orderId)
         {
-            var orderInfo = OrderService.Instance.Get(new {orderId});
+            var orderInfo = OrderService.Instance.Get(new { orderId });
             if (orderInfo == null)
             {
                 return Content("参数错误,未找到订单");
@@ -108,7 +108,7 @@ namespace TrueWays.Web.Controllers
 
         public JsonResult UpdateStatus(int orderId, int orderStatus)
         {
-            var result = OrderService.Instance.Update(new {orderStatus}, new {orderId});
+            var result = OrderService.Instance.Update(new { orderStatus }, new { orderId });
 
             return Json(result);
         }
@@ -119,11 +119,11 @@ namespace TrueWays.Web.Controllers
             var orderInfo = OrderService.Instance.Get(order.OrderId);
             if (orderInfo == null)
             {
-                return Json(new ApiResult<int>(2) {ErrorCode = 1, Message = "订单信息错误"});
+                return Json(new ApiResult<int>(2) { ErrorCode = 1, Message = "订单信息错误" });
             }
             if (orderInfo.Price < 0)
             {
-                return Json(new ApiResult<int>(3) {ErrorCode = 1, Message = "价格不能小于0"});
+                return Json(new ApiResult<int>(3) { ErrorCode = 1, Message = "价格不能小于0" });
             }
             if (orderStatus == -1)
             {
@@ -131,7 +131,7 @@ namespace TrueWays.Web.Controllers
             }
             else
             {
-                order.OrderStatus = (OrderStatus) orderStatus;
+                order.OrderStatus = (OrderStatus)orderStatus;
             }
             order.Remark = order.Remark ?? string.Empty;
             order.ShopName = order.ShopName ?? string.Empty;
@@ -158,18 +158,24 @@ namespace TrueWays.Web.Controllers
                 handleDate = DateTime.Now,
                 handleName = user.UserName,
                 orderStatus = order.OrderStatus.GetHashCode()
-            }, new {order.OrderId});
+            }, new { order.OrderId });
             return Json(result);
         }
 
-        public JsonResult CloseOrder(int orderId)
+        public JsonResult CloseOrder(UserInfo user, int orderId)
         {
-            var order = OrderService.Instance.Get(new {orderId});
+            var order = OrderService.Instance.Get(new { orderId });
             if (order == null || order.OrderStatus == OrderStatus.已受理)
             {
-                return Json(new ApiResult<int>(2) {ErrorCode = 1, Message = "订单状态错误"});
+                return Json(new ApiResult<int>(2) { ErrorCode = 1, Message = "订单状态错误" });
             }
-            var result = OrderService.Instance.Update(new {orderStatus = OrderStatus.交易关闭.GetHashCode()}, new {orderId});
+
+            var result = OrderService.Instance.Update(new
+            {
+                handleName = user.UserName,
+                handleDate = DateTime.Now,
+                orderStatus = OrderStatus.交易关闭.GetHashCode()
+            }, new { orderId });
             return Json(result);
         }
     }
