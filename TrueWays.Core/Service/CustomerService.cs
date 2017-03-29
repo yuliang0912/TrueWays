@@ -25,6 +25,10 @@ namespace TrueWays.Core.Service
         public int Create(CustomerInfo model)
         {
             var maxShopNo = Instance.GetMaxShopNo();
+            if (maxShopNo == 0)
+            {
+                maxShopNo = 1000;
+            }
             model.ShopNo = maxShopNo + 1;
             model.ShopName = model.ShopName ?? string.Empty;
             model.Abbreviation = model.Abbreviation ?? string.Empty;
@@ -36,6 +40,7 @@ namespace TrueWays.Core.Service
             model.Remark = (model.Remark ?? string.Empty).CutString(500);
             model.CreateDate = DateTime.Now;
             model.Status = 0;
+            model.Logo = model.Logo ?? string.Empty;
 
             return _customerInfoRepository.Insert(model);
         }

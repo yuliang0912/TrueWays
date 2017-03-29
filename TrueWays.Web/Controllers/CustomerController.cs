@@ -116,7 +116,7 @@ namespace TrueWays.Web.Controllers
 
             using (var ms = new MemoryStream())
             {
-                QrCodeHelper.GetQrCode("http://service.trueways.com/qrcode/" + customerId, ms);
+                QrCodeHelper.GetQrCode("http://sd.true-ways.com/customer/qrcode/" + customerId, ms);
                 var httpResponse = HttpContext.Response;
                 httpResponse.Clear();
                 httpResponse.Buffer = true;
@@ -153,22 +153,24 @@ namespace TrueWays.Web.Controllers
             Directory.CreateDirectory(qrCodePackageDirectory);
             Directory.CreateDirectory(qrCodePackageDirectory + "\\二维码\\");
 
-            var idList = new List<int> {1, 2, 3, 4, 5, 6, 7, 8};
+
+            var list = CustomerService.Instance.GetList(null);
+
 
             var qrCodeDirectory = baseDirectory + "QrCode\\";
-            foreach (var item in idList.Where(item => !System.IO.File.Exists(qrCodeDirectory + item + ".png")))
+            foreach (var item in list.Where(item => !System.IO.File.Exists(qrCodeDirectory + item.CustomerId + ".png")))
             {
                 using (var ms = new MemoryStream())
                 {
-                    QrCodeHelper.GetQrCode("http://www.ciwong.com/qrcode/" + item, ms);
+                    QrCodeHelper.GetQrCode("http://sd.true-ways.com/customer/qrcode/" + item.CustomerId, ms);
                     var image = Image.FromStream(ms);
-                    image.Save(qrCodeDirectory + item + ".png");
+                    image.Save(qrCodeDirectory + item.CustomerId + ".png");
                 }
             }
 
-            foreach (var item in idList)
+            foreach (var item in list)
             {
-                System.IO.File.Copy(qrCodeDirectory + item + ".png", qrCodePackageDirectory + "二维码//" + item + ".png",
+                System.IO.File.Copy(qrCodeDirectory + item.CustomerId + ".png", qrCodePackageDirectory + "二维码//" + item.ShopNo + "_" + item.ShopName + ".png",
                     true);
             }
 

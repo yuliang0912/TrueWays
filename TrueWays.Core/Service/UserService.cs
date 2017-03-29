@@ -67,7 +67,7 @@ namespace TrueWays.Core.Service
         //注册用户
         public int RegisterUser(UserInfo model)
         {
-            if (_userInfoRepository.Count(new {model.UserName}) > 0)
+            if (_userInfoRepository.Count(new {model.LoginName}) > 0)
             {
                 return 2;
             }

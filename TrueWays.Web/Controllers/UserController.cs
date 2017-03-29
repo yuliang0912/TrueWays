@@ -53,6 +53,7 @@ namespace TrueWays.Web.Controllers
         public JsonResult AddUser(UserInfo model)
         {
             var result = UserService.Instance.RegisterUser(model);
+
             return Json(result);
         }
 
