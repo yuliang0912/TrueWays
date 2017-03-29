@@ -82,7 +82,7 @@
                     <td>@item.HandleName</td>
                     <td>
                         <a href="/order/edit/?orderId=@(item.OrderId)" class="settings">编辑</a>
-                        @if (item.OrderStatus == OrderStatus.待受理)
+                        @if (item.OrderStatus == OrderStatus.待受理 || item.OrderStatus == OrderStatus.已受理)
                         {
                             <a href="/order/closeOrder?orderId=@item.OrderId" title="" class="red delete-modal" data-id="2471" data-trigger="focus" data-placement="left" tabindex="0" role="button" data-title="确定要关闭【@item.ShopName】的订单吗?" data-original-title="关闭">关闭</a>
                         }

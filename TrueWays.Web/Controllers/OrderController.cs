@@ -165,9 +165,13 @@ namespace TrueWays.Web.Controllers
         public JsonResult CloseOrder(UserInfo user, int orderId)
         {
             var order = OrderService.Instance.Get(new { orderId });
-            if (order == null || order.OrderStatus == OrderStatus.已受理)
+            if (order == null)
             {
-                return Json(new ApiResult<int>(2) { ErrorCode = 1, Message = "订单状态错误" });
+                return Json(new ApiResult<int>(2) { ErrorCode = 1, Message = "未找到订单" });
+            }
+            if (order.OrderStatus == OrderStatus.交易关闭)
+            {
+                return Json(true);
             }
 
             var result = OrderService.Instance.Update(new
