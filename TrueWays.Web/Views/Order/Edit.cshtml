@@ -124,7 +124,7 @@
     </div>
     <input type="hidden" name="orderStauts" id="orderStauts" value="3" />
     <div style="width: 300px; margin: 5px auto;">
-        @if (Model.OrderStatus == OrderStatus.待受理)
+        @if (Model.OrderStatus == OrderStatus.待受理 || Model.OrderStatus == OrderStatus.已受理)
         {
             <button type="button" class="btn btn-primary" onclick="handle(2)">受理</button>
             <button type="button" class="btn btn-default" onclick="handle(3)">交易关闭</button>

@@ -197,14 +197,14 @@
 
         $("#down-load").click(function () {
             layer.confirm("是否确定生成并且下载二维码压缩包?", function () {
-                location.href = "/customer/download";
+                window.open("/customer/download")
                 layer.closeAll();
             });
         });
 
         $("#export").click(function () {
             layer.confirm("是否确定生成并且下载Excel文件?", function () {
-                location.href = "/customer/export";
+                window.open("/customer/export")
                 layer.closeAll();
             });
         });

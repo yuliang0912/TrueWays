@@ -74,6 +74,9 @@ namespace TrueWays.Web.Controllers
             workSheet.Cell(1, 10).Value = "维修师傅";
             workSheet.Cell(1, 11).Value = "价格";
             workSheet.Cell(1, 12).Value = "操作员";
+            workSheet.Cell(1, 13).Value = "备注";
+            workSheet.Cell(1, 14).Value = "沟通记录";
+            workSheet.Cell(1, 15).Value = "故障内容";
 
             int rows = 2, index = 1;
             foreach (var model in list)
@@ -90,6 +93,9 @@ namespace TrueWays.Web.Controllers
                 workSheet.Cell(rows, 10).Value = model.Technician;
                 workSheet.Cell(rows, 11).Value = model.Price;
                 workSheet.Cell(rows, 12).Value = model.HandleName;
+                workSheet.Cell(rows, 13).Value = model.Remark;
+                workSheet.Cell(rows, 14).Value = model.CommunicationRecord;
+                workSheet.Cell(rows, 15).Value = model.FaultContent;
                 rows++;
             }
 

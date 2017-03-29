@@ -174,7 +174,7 @@
                     <div class="item-content">
                         <div class="item-label">店名</div>
                         <div class="item-input">
-                            <input type="text" value="@Model.ShopName" readonly="readonly">
+                            <input type="text" value="@Model.Abbreviation" readonly="readonly">
                         </div>
                         <div class="item-error"></div>
                     </div>
@@ -205,7 +205,12 @@
 <link rel="stylesheet" href="/contentV2/css/layer.css" id="layui_layer_skinlayercss">
 <script src="/ContentV2/js/layer.js"></script>
 <script type="text/javascript">
+    var isSubmit = false;
     $("#submit").click(function () {
+        if (isSubmit) {
+            return;
+        }
+        isSubmit = true;
         $.ajax({
             cache: true,
             type: "POST",
@@ -216,12 +221,15 @@
             contentType: false
         }).done(function (res) {
             if (res.data === true) {
-                $("#submit").attr("disabled", "disabled").val("提交成功");
+                layer.msg("提交成功，请留意来电");
+                $("#submit").css({ background: "#dfdfdf" }).val("提交成功");
             } else {
+                isSubmit = false;
                 layer.msg("报修失败");
             }
         }).fail(function () {
-            layer.alert("报修失败");
+            isSubmit = false;
+            layer.msg("报修失败");
         });
     });
 </script>
