@@ -61,7 +61,7 @@ namespace TrueWays.Web.Controllers
 
         public ActionResult QrCode(int id)
         {
-            var model = CustomerService.Instance.Get(new { customerId = id});
+            var model = CustomerService.Instance.Get(new {customerId = id});
             if (model == null)
             {
                 return Content("二维码错误,请联系客服");
@@ -71,12 +71,20 @@ namespace TrueWays.Web.Controllers
             return View(model);
         }
 
+        public ActionResult Repair()
+        {
+            return View();
+        }
+
+
+
+
 
         [HttpPost, ValidateAntiForgeryToken]
         public JsonResult AddOrder()
         {
             var customerId = Convert.ToInt32(Request.Form["customerId"] ?? string.Empty);
-            var model = CustomerService.Instance.Get(new { customerId });
+            var model = CustomerService.Instance.Get(new {customerId});
             if (model == null)
             {
                 return Json(new ApiResult<int>(2)
@@ -117,6 +125,31 @@ namespace TrueWays.Web.Controllers
             return Json(result);
         }
 
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public JsonResult AddCustomOrder()
+        {
+
+            var shopName = Request.Form["shopName"] ?? string.Empty;
+            var contactName = Request.Form["contactName"] ?? string.Empty;
+            var phone = Request.Form["phone"] ?? string.Empty;
+
+
+            var order = new OrderInfo()
+            {
+                OrderNo = "WX" + Core.Common.Extensions.StringExtensions.GetLongNo(),
+                CustomerId = 0,
+                ContactName = contactName,
+                Phone = phone.StartsWith("1") ? string.Empty : phone,
+                Mobile = phone.StartsWith("1") ? phone : string.Empty,
+                ShopName = shopName,
+                Address = "暂无地址,请联系客户",
+                OrderStatus = OrderStatus.待受理
+            };
+            var result = OrderService.Instance.CreateOrder(order);
+            return Json(result);
+        }
+
         /// <summary>
         /// 创建二维码
         /// </summary>
@@ -125,7 +158,7 @@ namespace TrueWays.Web.Controllers
         [AdminAuthorize]
         public ActionResult CreateQrCode(int customerId)
         {
-            var model = CustomerService.Instance.Get(new { customerId });
+            var model = CustomerService.Instance.Get(new {customerId});
             if (model == null)
             {
                 return Content("参数错误");
@@ -176,7 +209,9 @@ namespace TrueWays.Web.Controllers
             var qrCodeDirectory = baseDirectory + "QrCode\\";
             foreach (var item in list.Where(item => !System.IO.File.Exists(qrCodeDirectory + item.CustomerId + ".png")))
             {
-                using (var ms = QrCodeHelper.GetQRCode("http://sd.true-ways.com/customer/qrcode/" + item.CustomerId, logoPath))
+                using (
+                    var ms = QrCodeHelper.GetQRCode("http://sd.true-ways.com/customer/qrcode/" + item.CustomerId,
+                        logoPath))
                 {
                     var image = Image.FromStream(ms);
                     image.Save(qrCodeDirectory + item.CustomerId + ".png");
@@ -185,7 +220,8 @@ namespace TrueWays.Web.Controllers
 
             foreach (var item in list)
             {
-                System.IO.File.Copy(qrCodeDirectory + item.CustomerId + ".png", qrCodePackageDirectory + "二维码//" + item.ShopNo + "_" + item.ShopName + ".png",
+                System.IO.File.Copy(qrCodeDirectory + item.CustomerId + ".png",
+                    qrCodePackageDirectory + "二维码//" + item.ShopNo + "_" + item.ShopName + ".png",
                     true);
             }
 
@@ -330,6 +366,14 @@ namespace TrueWays.Web.Controllers
                 model.Logo = Request.Form["deleteLogo"] == "1" ? string.Empty : customer.Logo;
             }
 
+            model.Remark = model.Remark ?? string.Empty;
+            model.ContactName = model.ContactName ?? string.Empty;
+            model.ShopName = model.ShopName ?? string.Empty;
+            model.Salesman = model.Salesman ?? string.Empty;
+            model.Abbreviation = model.Abbreviation ?? string.Empty;
+            model.Mobile = model.Mobile ?? string.Empty;
+            model.Phone = model.Phone ?? string.Empty;
+
             var result = CustomerService.Instance.Update(new
             {
                 model.ContactName,
@@ -340,6 +384,8 @@ namespace TrueWays.Web.Controllers
                 model.Status,
                 model.Abbreviation,
                 model.Logo,
+                model.Phone,
+                model.Mobile
             }, new {model.CustomerId});
 
             return Json(result ? 1 : 0);
