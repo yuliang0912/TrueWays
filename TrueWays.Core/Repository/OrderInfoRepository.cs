@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrueWays.Core.Common.Dapper;
+using TrueWays.Core.Common.Extensions;
 using TrueWays.Core.Models;
 
 namespace TrueWays.Core.Repository
@@ -38,7 +39,7 @@ namespace TrueWays.Core.Repository
             }
             if (!string.IsNullOrWhiteSpace(orderNo))
             {
-                additional += "AND orderNo = @orderNo ";
+                additional += "AND orderNo LIKE @orderNo ";
             }
 
             Func<object, string> buildWhereSql =
@@ -48,10 +49,18 @@ namespace TrueWays.Core.Repository
 
             using (var connection = GetReadConnection)
             {
-                return connection.QueryPaged<OrderInfo>(new {orderNo, shopName, phone, orderStatus}, TableName,
-                    "CreateDate DESC",
-                    page, pageSize,
-                    out totalItem, buildWhereSql);
+                return
+                    connection.QueryPaged<OrderInfo>(
+                        new
+                        {
+                            orderNo = orderNo.FormatSqlLikeString(),
+                            shopName = shopName.FormatSqlLikeString(),
+                            phone,
+                            orderStatus
+                        }, TableName,
+                        "CreateDate DESC",
+                        page, pageSize,
+                        out totalItem, buildWhereSql);
             }
         }
 

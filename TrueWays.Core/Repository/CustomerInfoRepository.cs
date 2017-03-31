@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Dapper;
 using TrueWays.Core.Common.Dapper;
+using TrueWays.Core.Common.Extensions;
 using TrueWays.Core.Models;
 
 namespace TrueWays.Core.Repository
@@ -39,7 +40,8 @@ namespace TrueWays.Core.Repository
 
             using (var connection = GetReadConnection)
             {
-                return connection.QueryPaged<CustomerInfo>(new {keyWords}, TableName, "CreateDate DESC", page, pageSize,
+                return connection.QueryPaged<CustomerInfo>(new {keyWords = keyWords.FormatSqlLikeString()}, TableName,
+                    "CreateDate DESC", page, pageSize,
                     out totalItem, buildWhereSql);
             }
         }

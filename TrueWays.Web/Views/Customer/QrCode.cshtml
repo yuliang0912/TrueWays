@@ -168,46 +168,46 @@
 </head>
 
 <body>
-<div class="page-container">
-    <div class="con-logo">
-        <img src="/Content/images/logo.png" />
-    </div>
-    <div class="con-tip">
-        厨卫士客服将在10分钟内与您联系<br />请确保电话号码准确和保持通畅
-    </div>
-    <div class="tab-content">
-        <div class="tab-pane">
-            <form class="form-horizontal" id="order-form" action="/customer/AddOrder" method="post">
-                <div class="item-content">
-                    <div class="item-label">店名</div>
-                    <div class="item-input">
-                        <input type="text" value="@Model.Abbreviation" readonly="readonly">
+    <div class="page-container">
+        <div class="con-logo">
+            <img style="width: 120px;" src="@(string.IsNullOrWhiteSpace(Model.Logo)? "/Content/images/logo.png": Model.Logo)" />
+        </div>
+        <div class="con-tip">
+            厨卫士客服将在10分钟内与您联系<br />请确保电话号码准确和保持通畅
+        </div>
+        <div class="tab-content">
+            <div class="tab-pane">
+                <form class="form-horizontal" id="order-form" action="/customer/AddOrder" method="post">
+                    <div class="item-content">
+                        <div class="item-label">店名</div>
+                        <div class="item-input">
+                            <input type="text" value="@Model.Abbreviation" readonly="readonly">
+                        </div>
+                        <div class="item-error"></div>
                     </div>
-                    <div class="item-error"></div>
-                </div>
-                <div class="item-content">
-                    <div class="item-label">联系人</div>
-                    <div class="item-input">
-                        <input type="text" name="contactName" value="@Model.ContactName">
+                    <div class="item-content">
+                        <div class="item-label">联系人</div>
+                        <div class="item-input">
+                            <input type="text" name="contactName" value="@Model.ContactName">
+                        </div>
+                        <div class="item-error"></div>
                     </div>
-                    <div class="item-error"></div>
-                </div>
-                <div class="item-content">
-                    <div class="item-label">@(string.IsNullOrWhiteSpace(Model.Phone) ? "手机" : "电话" )</div>
-                    <div class="item-input">
-                        <input type="text" name="@(string.IsNullOrWhiteSpace(Model.Phone) ? "mobile" : "phone" )" value="@(string.IsNullOrWhiteSpace(Model.Phone) ? Model.Mobile : Model.Phone)">
+                    <div class="item-content">
+                        <div class="item-label">@(string.IsNullOrWhiteSpace(Model.Phone) ? "手机" : "电话" )</div>
+                        <div class="item-input">
+                            <input type="text" name="@(string.IsNullOrWhiteSpace(Model.Phone) ? "mobile" : "phone" )" value="@(string.IsNullOrWhiteSpace(Model.Phone) ? Model.Mobile : Model.Phone)">
+                        </div>
+                        <div class="item-error"></div>
                     </div>
-                    <div class="item-error"></div>
-                </div>
-                <div id="item-btn" class="item-btn">
-                    <input type="button" id="submit" value="立即报修" style="width:100%;height:2.6em;border-radius:.4em;background:#fa6600;color:#fff;font-size:1.3em; -webkit-border-radius:.4em;">
-                </div>
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="customerId" value="@Model.CustomerId" />
-            </form>
+                    <div id="item-btn" class="item-btn">
+                        <input type="button" id="submit" value="立即报修" style="width:100%;height:2.6em;border-radius:.4em;background:#fa6600;color:#fff;font-size:1.3em; -webkit-border-radius:.4em;">
+                    </div>
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="customerId" value="@Model.CustomerId" />
+                </form>
+            </div>
         </div>
     </div>
-</div>
 </body>
 <script type="text/javascript">
     var isSubmit = false;
