@@ -38,6 +38,10 @@
             padding: 0;
         }
 
+            input[type="button"], input[type="submit"], input[type="reset"] {
+                -webkit-appearance: none;
+            }
+
         li {
             list-style: none;
         }
@@ -97,7 +101,9 @@
 
         .page-container {
             margin: 0 5%;
+            height: 35em;
         }
+
 
         .con-logo {
             width: 100%;
@@ -126,7 +132,7 @@
         }
 
         .item-content {
-            margin-top: 2em;
+            margin-top: 1.5em;
             padding-bottom: .4em;
             border-bottom: 1px solid #e6e6e6;
         }
@@ -141,9 +147,6 @@
             font-size: 1.2em;
         }
 
-        .item-btn {
-            margin: 4em 0 1em 0;
-        }
 
         .item-cancel {
             float: right;
@@ -161,9 +164,24 @@
             }
 
         .item-btn {
-            margin: 3em 0 1em 0;
+            margin: 2em 0 1em 0;
+        }
+
+            .item-btn > input {
+                width: 100%;
+                height: 2.6em;
+                border-radius: .4em;
+                background: #fa6600;
+                color: #fff;
+                font-size: 1.3em;
+                -webkit-border-radius: .4em;
+            }
+
+        .con-logo img {
+            height: 5.5em;
         }
     </style>
+
 
 </head>
 
