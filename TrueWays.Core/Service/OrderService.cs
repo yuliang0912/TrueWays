@@ -56,8 +56,8 @@ namespace TrueWays.Core.Service
             order.Remark = string.Empty;
             order.HandleName = string.Empty;
             order.Technician = string.Empty;
-            order.Phone = string.Empty;
-            order.Mobile = string.Empty;
+            order.Phone = order.Phone ?? string.Empty;
+            order.Mobile = order.Mobile ?? string.Empty;
             return _orderInfoRepository.Insert(order) > 0;
         }
     }
