@@ -30,7 +30,7 @@ namespace TrueWays.Core.Repository
             {
                 additional += $"AND (phone = '{phone}' OR mobile = '{phone}') ";
             }
-            if (status > 0)
+            if (status > -1)
             {
                 additional += $"AND status = {status} ";
             }
